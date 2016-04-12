@@ -46,3 +46,80 @@ class Candidate(BaseUser):
 
 	def __str__(self):
 		return self.email
+
+class CandidatePreferencesLocation(models.Model):
+	country = CountryField(blank=True)
+
+	def __str__(self):
+		return self.country
+
+class CandidatePreferencesEmployerType(models.Model):
+	employer_type = models.CharField(
+		max_length=100,
+		choices=(
+			('University', 'University'), 
+			('High School', 'High School'),
+			('Middle School', 'Middle School'), 
+			('Primary School', 'Primary School'),
+			('Kindergarten', 'Kindergarten'),
+			('Youth Language Center', 'Youth Language Center'),
+			('Adult Language Center', 'Adult Language Center'),			
+		)
+	)
+	def __str__(self):
+		return self.employer_type
+
+class CandidatePreferencesPositionType(models.Model):
+	job_title = models.CharField(
+		max_length=10,
+		choices=(
+			('Teacher', 'Teacher'), 
+			('Manager', 'Manager'),
+			('Partner', 'Partner'), 									
+		)
+	)
+	def __str__(self):
+		return self.job_title				
+
+class CandidatePreferences(models.Model):
+	candidate = models.OneToOneField(
+		Candidate,
+		on_delete=models.CASCADE,
+	)
+	location = models.ManyToManyField(CandidatePreferencesLocation, blank=True)
+	employer_type = models.ManyToManyField(CandidatePreferencesEmployerType, blank=True)
+	desired_job_title = models.ManyToManyField(CandidatePreferencesPositionType, blank=True)
+	desired_monthlty_salary = models.CharField(
+		blank=True,
+		max_length=10,
+		choices=(
+			('1000', '1000+'), 
+			('2000', '2000+'), 
+			('3000', '3000+'),
+			('4000', '4000+'), 
+			('5000', '5000+'),
+			('6000', '6000+'), 
+			('7000', '7000+'),
+			('8000', '8000+'), 
+			('9000', '9000+'),
+			('10000', '10000+'),
+			('11000', '11000+'), 
+			('12000', '12000+'),
+			('13000', '13000+'),
+			('14000', '14000+'),
+			('15000', '15000+'), 
+			('16000', '16000+'),
+			('17000', '17000+'),
+			('18000', '18000+'),
+			('19000', '19000+'),
+			('20000', '20000+'),
+			('21000', '21000+'),
+			('22000', '22000+'),
+			('23000', '23000+'),
+			('24000', '24000+'),
+			('25000', '25000+'),								 
+		)
+	)
+
+	def __str__(self):
+		return self.candidate.email
