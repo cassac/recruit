@@ -2,5 +2,6 @@ from django.contrib import admin
 from .models import Candidate
 
 class CandidateAdmin(admin.ModelAdmin):
-	pass
+	exclude = ('password', 'last_login', 'is_admin',)
+
 admin.site.register(Candidate, CandidateAdmin)
