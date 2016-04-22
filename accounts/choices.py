@@ -1,6 +1,17 @@
+# Choices used for M2M tables are actually not used in
+# varChar fields. They must be manually inserted into db.
+
 import pytz
+from django_countries import countries
 
 TIMEZONE_CHOICES = tuple((choice, choice) for choice in pytz.common_timezones)
+
+COUNTRY_CHOICES = tuple(countries)
+
+GENDER_CHOICES = (
+				('male','male'),
+				('female', 'female'),
+			)
 
 EDUCATION_CHOICES = (
 				('High School','High School'),
