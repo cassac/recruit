@@ -82,15 +82,42 @@ class CandidatePreferences(models.Model):
 	def __str__(self):
 		return self.candidate.email
 
+class Company(BaseUser):
+	phone_number = PhoneNumberField(blank=False)
+	name_english = models.CharField(blank=False, max_length=200)
+	name_local = models.CharField(blank=False, max_length=200)
+	address_english = models.CharField(blank=False, max_length=200)
+	address_local = models.CharField(blank=False, max_length=200)
+	business_license = models.ImageField(upload_to='%Y/%m/%d')
+
+	def __str__(self):
+		return self.name_english
+
+class CompanyPreferences(models.Model):
+	company = models.OneToOneField(
+		Company,
+		on_delete=models.CASCADE,
+	)
+	education = models.CharField(
+			max_length=25,
+			blank=True,
+			choices=EDUCATION_CHOICES,
+		)
+	education_major = models.CharField(max_length=50, blank=True)
+	age_range_low = models.IntegerField(blank=True)
+	age_range_high = models.IntegerField(blank=True)
+	years_of_experience = models.IntegerField(blank=True)
+	citizenship = models.ManyToManyField(Countries, blank=True)
+
+	def __str__(self):
+		return self.company.name_english
+
 class Recruiter(BaseUser):
-	phone_number = PhoneNumberField()
+	phone_number = PhoneNumberField(blank=False)
 	date_of_birth = models.DateField(blank=True)
 	location = models.CharField(blank=True, max_length=100)
 	id_card = models.ImageField(upload_to='%Y/%m/%d')
-	# candidate = models.OneToOneField(
-	# 	Employer,
-	# 	on_delete=models.CASCADE,
-	# )
+	companies = models.ManyToManyField(Company, blank=False)
 	USERNAME_FIELD = 'pk'
 
 	def __str__(self):
