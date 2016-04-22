@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
@@ -8,8 +8,28 @@ from .choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 	EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES, POSITION_TYPE_CHOICES, 
 	DESIRED_MONTHLY_SALARY_CHOICES)
 
+class BaseUserManager(BaseUserManager):
+	def create_user(self, email, password=None):
+		if not email:
+			raise ValueError('Users must have an email address')
+
+		user = self.model(
+			email=self.normalize_email(email),
+		)
+		user.set_password(password)
+		user.save(using=self._db)
+		return user
+
+	def create_superuser(self, email, password):
+		user = self.create_user(email,
+			password=password
+		)
+		user.is_admin = True
+		user.save(using=self._db)
+		return user
+
 class BaseUser(AbstractBaseUser):
-	email = models.EmailField(max_length=100, unique=True)
+	email = models.EmailField(max_length=100, unique=True, verbose_name='email address')
 	first_name = models.CharField(max_length=50, blank=False)
 	last_name = models.CharField(max_length=50, blank=False)
 	gender = models.CharField(max_length=10, blank=True, choices=GENDER_CHOICES)
@@ -24,6 +44,28 @@ class BaseUser(AbstractBaseUser):
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
+	objects = BaseUserManager()
+
+	USERNAME_FIELD = 'email'
+
+	def __str__(self):
+		return self.email
+
+	def get_full_name(self):
+		return self.email
+
+	def get_short_name(self):
+		return self.email
+
+	def has_perm(self, perm, obj=None):
+		return True
+
+	def has_module_perms(self, app_label):
+		return True
+
+	@property
+	def is_staff(self):
+		return self.is_admin
 
 class Candidate(BaseUser):
 	date_of_birth = models.DateField(blank=True)
