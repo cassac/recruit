@@ -1,16 +1,16 @@
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
-from django_countries.fields import CountryField
 from django.utils import timezone
-
-from .choices import (TIMEZONE_CHOICES, EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES,
- POSITION_TYPE_CHOICES, DESIRED_MONTHLY_SALARY_CHOICES)
+from django_countries.fields import CountryField
+from .choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
+	EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES, POSITION_TYPE_CHOICES, 
+	DESIRED_MONTHLY_SALARY_CHOICES)
 
 class BaseUser(AbstractBaseUser):
 	email = models.EmailField(max_length=100, unique=True)
 	first_name = models.CharField(max_length=50, blank=False)
 	last_name = models.CharField(max_length=50, blank=False)
-	gender = models.CharField(max_length=10, blank=True, choices=(('male','male'),('female', 'female'),))
+	gender = models.CharField(max_length=10, blank=True, choices=GENDER_CHOICES)
 	citizenship = CountryField(blank=False)
 	timezone = models.CharField(
 			max_length=50, 
@@ -39,7 +39,10 @@ class Candidate(BaseUser):
 		return self.email
 
 class CandidatePreferencesLocation(models.Model):
-	country = CountryField(blank=True)
+	country = models.CharField(
+		max_length=100,
+		choices=COUNTRY_CHOICES,
+	)
 
 	def __str__(self):
 		return self.country
