@@ -17,10 +17,13 @@ class InterviewRequest(models.Model):
 		max_length=5,
 		default=shortuuid.ShortUUID().random(length=5).upper(),
 		)
-	party_a = models.ManyToManyField(BaseUser, related_name='party_a') 
-	party_b = models.ManyToManyField(BaseUser, related_name='party_b')
+	party_a = models.OneToOneField(BaseUser, related_name='party_a') 
+	party_b = models.OneToOneField(BaseUser, related_name='party_b')
 	confirmed_time = models.DateTimeField(null=True, blank=True)
 	status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 	is_active = models.BooleanField(default=1)
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+	def __str__(self):
+		return '<Interview: A: %s, B: %s' % (self.party_a, self.party_b)
