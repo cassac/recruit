@@ -66,15 +66,17 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(BaseUser, UserAdmin)
 admin.site.unregister(Group)
 
+class CandidatePreferencesInline(admin.StackedInline):
+	model = CandidatePreferences
+	can_delete = False
+	verbose_name_plural = 'Preferences'
+
 class CandidateAdmin(admin.ModelAdmin):
+	inlines = (CandidatePreferencesInline,)
 	exclude = ('password', 'last_login', 'is_admin',)
 
 admin.site.register(Candidate, CandidateAdmin)
 
-class CandidatePreferencesAdmin(admin.ModelAdmin):
-	pass
-
-admin.site.register(CandidatePreferences, CandidatePreferencesAdmin)
 
 class RecruiterAdmin(admin.ModelAdmin):
 	exclude = ('password', 'last_login', 'is_admin',)
