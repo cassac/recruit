@@ -100,7 +100,7 @@ class Candidate(BaseUser):
 		)	
 	education_major = models.CharField(max_length=250, blank=True)
 	current_location = CountryField(blank=True)
-	available = models.DateField()
+	available_after = models.DateField()
 	USERNAME_FIELD = 'pk'
 
 	def __str__(self):
