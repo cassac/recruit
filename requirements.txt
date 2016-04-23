@@ -1,6 +1,7 @@
 Babel==2.3.4
 defusedxml==0.4.1
 Django==1.9.5
+django-bootstrap3==7.0.1
 django-countries==3.4.1
 django-extensions==1.6.1
 django-localflavor==1.2
