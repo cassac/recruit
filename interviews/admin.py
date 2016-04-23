@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import InterviewRequest
+from .models import InterviewRequest, Available
 
 class InterviewRequestAdmin(admin.ModelAdmin):
 	readonly_fields = ('uuid',)
@@ -9,3 +9,8 @@ class InterviewRequestAdmin(admin.ModelAdmin):
 	list_filter = ('status', 'confirmed_time',)
 
 admin.site.register(InterviewRequest, InterviewRequestAdmin)
+
+class AvailableAdmin(admin.ModelAdmin):
+	pass
+
+admin.site.register(Available, AvailableAdmin)
