@@ -8,6 +8,25 @@ from .choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 	EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES, POSITION_TYPE_CHOICES, 
 	DESIRED_MONTHLY_SALARY_CHOICES)
 
+def load_m2m_choices():
+
+	for choice in COUNTRY_CHOICES:
+		Country(
+			country=choice[1]
+		).save()
+
+	for choice in EMPLOYER_TYPE_CHOICES:
+
+		CandidatePreferencesEmployerType(
+				employer_type=choice[1]
+			).save()
+
+	for choice in POSITION_TYPE_CHOICES:
+
+		CandidatePreferencesPositionType(
+				job_title=choice[1]
+			).save()
+
 class BaseUserManager(BaseUserManager):
 	def create_user(self, email, password=None):
 		if not email:
@@ -68,7 +87,7 @@ class BaseUser(AbstractBaseUser):
 		return self.is_admin
 
 class Candidate(BaseUser):
-	date_of_birth = models.DateField(blank=True)
+	date_of_birth = models.DateField(blank=True, null=True)
 	education = models.CharField(
 			max_length=25,
 			blank=True,
@@ -82,10 +101,19 @@ class Candidate(BaseUser):
 	def __str__(self):
 		return self.email
 
-class Countries(models.Model):
+class Country(models.Model):
 	country = models.CharField(
 		max_length=100,
 		choices=COUNTRY_CHOICES,
+	)
+
+	def __str__(self):
+		return self.country
+
+class Gender(models.Model):
+	gender = models.CharField(
+		max_length=100,
+		choices=GENDER_CHOICES,
 	)
 
 	def __str__(self):
@@ -112,7 +140,7 @@ class CandidatePreferences(models.Model):
 		Candidate,
 		on_delete=models.CASCADE,
 	)
-	location = models.ManyToManyField(Countries, blank=True)
+	location = models.ManyToManyField(Country, blank=True)
 	employer_type = models.ManyToManyField(CandidatePreferencesEmployerType, blank=True)
 	desired_job_title = models.ManyToManyField(CandidatePreferencesPositionType, blank=True)
 	desired_monthlty_salary = models.CharField(
@@ -149,14 +177,14 @@ class CompanyPreferences(models.Model):
 	age_range_low = models.IntegerField(blank=True)
 	age_range_high = models.IntegerField(blank=True)
 	years_of_experience = models.IntegerField(blank=True)
-	citizenship = models.ManyToManyField(Countries, blank=True)
+	citizenship = models.ManyToManyField(Country, blank=True)
 
 	def __str__(self):
 		return self.company.name_english
 
 class Recruiter(BaseUser):
 	phone_number = PhoneNumberField(blank=False)
-	date_of_birth = models.DateField(blank=True)
+	date_of_birth = models.DateField(blank=True, null=True)
 	location = models.CharField(blank=True, max_length=100)
 	id_card = models.ImageField(upload_to='%Y/%m/%d')
 	companies = models.ManyToManyField(Company, blank=False)
