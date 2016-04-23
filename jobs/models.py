@@ -44,4 +44,4 @@ class JobPreferences(models.Model):
 	age_high = models.IntegerField()
 	age_low = models.IntegerField()
 	gender = models.ManyToManyField(Gender, blank=True) 	
-	requirements = models.ManyToManyField(Country, blank=True)		
+	citizenship = models.ManyToManyField(Country, blank=True)		
