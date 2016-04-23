@@ -37,11 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # External apps
+    'django_extensions',
+    'django_countries',
+    'bootstrap3',
+    # Project apps
     'accounts',
     'jobs',
     'interviews',
-    'django_extensions',
-    'django_countries',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -60,7 +63,7 @@ ROOT_URLCONF = 'recruit.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
