@@ -29,7 +29,7 @@ class InterviewRequest(models.Model):
 	def __str__(self):
 		return '<Interview: A: %s, B: %s>' % (self.party_a, self.party_b)
 
-class Availability(models.Model):
+class Available(models.Model):
 	day_of_week = models.IntegerField()
 	timeslot_begin = models.TimeField()
 	timeslot_end = models.TimeField()
