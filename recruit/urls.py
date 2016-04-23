@@ -18,9 +18,12 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from interviews import views as interviewsViews
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
+    url(r'^available/$', interviewsViews.available, name='available'),
 ]
 
 if settings.DEBUG:
