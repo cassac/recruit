@@ -16,4 +16,5 @@ python3-openid==3.0.10
 pytz==2016.3
 requests==2.9.1
 requests-oauthlib==0.6.1
+shortuuid==0.4.3
 six==1.10.0
