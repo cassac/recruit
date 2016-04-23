@@ -15,6 +15,11 @@ def load_m2m_choices():
 			country=choice[1]
 		).save()
 
+	for choice in GENDER_CHOICES:
+		Gender(
+			gender=choice[1]
+		).save()
+
 	for choice in EMPLOYER_TYPE_CHOICES:
 
 		CandidatePreferencesEmployerType(
@@ -117,7 +122,7 @@ class Gender(models.Model):
 	)
 
 	def __str__(self):
-		return self.country
+		return self.gender
 
 class CandidatePreferencesEmployerType(models.Model):
 	employer_type = models.CharField(
