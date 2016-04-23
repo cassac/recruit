@@ -9,8 +9,8 @@ TIMEZONE_CHOICES = tuple((choice, choice) for choice in pytz.common_timezones)
 COUNTRY_CHOICES = tuple(countries)
 
 GENDER_CHOICES = (
-				('male','male'),
-				('female', 'female'),
+				('male','Male'),
+				('female', 'Female'),
 			)
 
 EDUCATION_CHOICES = (
