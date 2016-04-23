@@ -83,12 +83,13 @@ class RecruiterAdmin(admin.ModelAdmin):
 
 admin.site.register(Recruiter, RecruiterAdmin)
 
+class CompanyPreferencesInline(admin.StackedInline):
+	model = Company
+	can_delete = False
+	verbose_name_plural = 'Preferences'
+
 class CompanyAdmin(admin.ModelAdmin):
+	inlines = (CompanyPreferencesInline,)
 	exclude = ('password', 'last_login', 'is_admin',)
 
 admin.site.register(Company, CompanyAdmin)
-
-class CompanyPreferencesAdmin(admin.ModelAdmin):
-	pass
-
-admin.site.register(CompanyPreferences, CompanyPreferencesAdmin)
