@@ -23,7 +23,7 @@ from interviews import views as interviewsViews
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
-    url(r'^available/$', interviewsViews.available, name='available'),
+    url(r'^available/(?P<bu_id>[0-9])/$', interviewsViews.available, name='available'),
 ]
 
 if settings.DEBUG:
