@@ -2,10 +2,14 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		 <meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="icon" href='{{ STATIC_URL }}fav.ico'  type="image/ico">
-		{% bootstrap_css %}
 		<title>{% block title %}Recruit{% endblock %}</title>
+		{% bootstrap_css %}
+		{% block head %}
+
+		{% endblock %}
 		<style>
 			.footer {
 			  padding-top: 40px;
@@ -49,7 +53,7 @@
 		</div>
 
 		{% block scripts %}
-			<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+			<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 			{% bootstrap_javascript %}
 		{% endblock %}
 	</body>
