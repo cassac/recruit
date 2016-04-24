@@ -1,12 +1,36 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h1>Availability</h1>
-<p>List times here...</p>
-
+{% block head %}
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/css/bootstrap-slider.css">
 {% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class='col-sm-offset-3 col-md-6'>
+		<input id="ex6" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="3"/>
+		<span id="ex6CurrentSliderValLabel">Current Slider Value: </span>
+		<span id="ex6SliderVal">3</span>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
 
 {% block scripts %}
-	{{ block.super }}
-	<script src="//cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.3/moment-timezone-with-data-2010-2020.min.js"></script>
+{{ block.super }}
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
+<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/bootstrap-slider.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$("#ex6").slider();
+	$("#ex6").on("slide", function(slideEvt) {
+		$("#ex6SliderVal").text(slideEvt.value);
+	});
+});
+</script>
+
 {% endblock %}
+
