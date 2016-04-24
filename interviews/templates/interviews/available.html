@@ -8,9 +8,10 @@
 {% block content %}
 <div class="row">
 	<div class='col-sm-offset-3 col-md-6'>
-		<input id="ex6" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="3"/>
-		<span id="ex6CurrentSliderValLabel">Current Slider Value: </span>
-		<span id="ex6SliderVal">3</span>
+
+<span class='start'></span>
+<input id="ex16b" type="text"/><br/>
+<span class='finish'></span>
 		</div>
 	</div>
 </div>
@@ -25,10 +26,43 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-	$("#ex6").slider();
-	$("#ex6").on("slide", function(slideEvt) {
-		$("#ex6SliderVal").text(slideEvt.value);
+
+	$("#ex16b").slider({
+		step: .5, 
+		min: 0, 
+		max: 24, 
+		value: [0, 24], 
+		focus: true 
 	});
+
+	function formatTime(time) {
+		var time = String(time).split('.');
+
+		if (time[0].length < 2) {
+			hours = '0'.concat(time[0])
+		} else {
+			hours = time[0]
+		}
+
+		if (time.length>1) {
+			minutes = ':30'; 
+		} else {
+			minutes = ':00';
+		}
+
+		return hours + minutes;
+
+	}
+
+	$("#ex16b").on('change', function(event){
+		var start = formatTime(event.value.newValue[0]);
+		var end = formatTime(event.value.newValue[1]);
+		$('.start').text(start);
+		$('.finish').text(end);
+	})
+
+
+
 });
 </script>
 
