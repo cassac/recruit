@@ -1,17 +1,149 @@
 {% extends "base.html" %}
 
 {% block head %}
-<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/css/bootstrap-slider.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/css/bootstrap-slider.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
+<style>
+	td {
+		text-align: center;
+	}
+	.slider-selection {
+		background: #CCC;
+	}
+	td:nth-child(3) {
+		text-align: right;
+	}	
+	td:nth-child(5) {
+		text-align: left;
+	}	
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-	<div class='col-sm-offset-3 col-md-6'>
+	<div class='col-md-offset-3 col-md-6'>
 
-<span class='start'></span>
-<input id="ex16b" type="text"/><br/>
-<span class='finish'></span>
+<h1>{{ user }}'s Availability</h1>
+<table class="table">
+  	<thead>
+ 		<tr>
+ 			<th>Day</th>
+ 			<th>Available?</th>
+ 			<th>Start Time</th>
+ 			<th>Time Range</th>
+ 			<th>End Time</th>
+ 		</tr>
+ 	</thead>
+ <tbody>
+ 	<tr>
+ 		<th>Monday</th>
+ 		<td>
+ 			<input class='monday' type='checkbox'>
+ 		</td>
+ 		<td>
+			<span id='mondayStart' class='start'></span>
+		</td>
+		<td>
+				<input class='slideInput' id="monday" type="text"/>
+		</td>
+		<td>
+			<span id='mondayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>
+	<tr>
+		<th>Tuesday</th>
+		<td>
+ 			<input class='tuesday' type='checkbox'>
+ 		</td>
+		<td>
+			<span id='tuesdayStart' class='start'></span>
+		</td>
+		<td>	
+				<input class='slideInput' id="tuesday" type="text"/>
+		</td>
+		<td>
+			<span id='tuesdayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>
+	<tr>
+		<th>Wednesday</th>
+		<td>
+ 			<input class='wednesday' type='checkbox'>
+ 		</td>
+		<td>
+			<span id='wednesdayStart' class='start'></span>
+		</td>
+		<td>	
+				<input class='slideInput' id="wednesday" type="text"/>
+		</td>
+		<td>
+			<span id='wednesdayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>
+	<tr>
+		<th>Thursday</th>
+		<td>
+ 			<input class='thursday' type='checkbox'>
+ 		</td>
+		<td>
+			<span id='thursdayStart' class='start'></span>
+		</td>
+		<td>	
+				<input class='slideInput' id="thursday" type="text"/>
+		</td>
+		<td>
+			<span id='thursdayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>
+	<tr>
+		<th>Friday</th>
+		<td>
+ 			<input class='friday' type='checkbox'>
+ 		</td>
+		<td>
+			<span id='fridayStart' class='start'></span>
+		</td>
+		<td>	
+				<input class='slideInput' id="friday" type="text"/>
+		</td>
+		<td>
+			<span id='fridayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>			
+	<tr>
+		<th>Saturday</th>
+		<td>
+ 			<input class='saturday' type='checkbox'>
+ 		</td>
+		<td>
+			<span id='saturdayStart' class='start'></span>
+		</td>
+		<td>	
+				<input class='slideInput' id="saturday" type="text"/>
+		</td>
+		<td>
+			<span id='saturdayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>
+	<tr>
+		<th>Sunday</th>
+		<td>
+ 			<input class='sunday' type='checkbox'>
+ 		</td>
+		<td>
+			<span id='sundayStart' class='start'></span>
+		</td>
+		<td>	
+				<input class='slideInput' id="sunday" type="text" disable/>
+		</td>
+		<td>
+			<span id='sundayEnd' class='end'>17:00 PM</span>
+		</td>
+	</tr>	
+</tbody>
+
+</table>
+
 		</div>
 	</div>
 </div>
@@ -20,19 +152,48 @@
 
 {% block scripts %}
 {{ block.super }}
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
-<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/bootstrap-slider.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function() {
 
-	$("#ex16b").slider({
+	var checkboxes = $("[type='checkbox']");
+	checkboxes.attr('data-size', 'mini');
+	checkboxes.attr('data-on-text', 'Yes');
+	checkboxes.attr('data-off-text', 'No');
+	checkboxes.bootstrapSwitch();
+
+	$('input[type="checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+
+		var day = event.target.className;
+		var daySlider = $('input[type="text"]#' + day);
+		var spanStart = $('span#' + day + 'Start');
+		var spanEnd = $('span#' + day + 'End');
+
+		if (state) {
+			daySlider.slider("enable");
+			console.log('enable it');
+			spanStart.removeClass('hide');
+			spanEnd.removeClass('hide');
+
+		} else {
+			daySlider.slider("disable");
+			console.log('disable it');
+			spanStart.addClass('hide');
+			spanEnd.addClass('hide');
+		}
+
+	});
+
+	$("input.slideInput").slider({
 		step: .5, 
 		min: 0, 
 		max: 24, 
-		value: [0, 24], 
-		focus: true 
+		value: [7, 17],
+		tooltip: 'hide', 
+		focus: true,
+		enabled: false 
 	});
 
 	function formatTime(time) {
@@ -54,12 +215,18 @@ $(document).ready(function() {
 
 	}
 
-	$("#ex16b").on('change', function(event){
-		var start = formatTime(event.value.newValue[0]);
-		var end = formatTime(event.value.newValue[1]);
-		$('.start').text(start);
-		$('.finish').text(end);
-	})
+	$("input.slideInput").on('change', function(event){
+		var dayOfWeek = event.target.id;
+		var startSpan = $('#' + dayOfWeek + 'Start');
+		var endSpan = $('#' + dayOfWeek + 'End');
+
+		var startTime = formatTime(event.value.newValue[0]);
+		var endTime = formatTime(event.value.newValue[1]);
+
+		startSpan.text(startTime);
+		endSpan.text(endTime);
+		
+	});
 
 
 
