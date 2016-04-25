@@ -6,5 +6,5 @@ from accounts.models import BaseUser
 def available(request, bu_id):
 	user = BaseUser.objects.get(id=bu_id)
 	messages.add_message(request, messages.SUCCESS, 'Message here')
-	context = {'user': user.first_name}
+	context = {'user': user.first_name, 'timezone': 'America/Adak'}
 	return render(request, 'interviews/available.html', context)
