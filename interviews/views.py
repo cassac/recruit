@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import JsonResponse
@@ -11,6 +12,9 @@ def available(request, bu_id):
 		context = {'user': user.first_name, 'timezone': ''}
 
 	if request.method == 'POST':
+		availability = json.loads(request.POST.get('availability'))
+		for day, time in availability.items():
+			print(day, time['start'], time['end'])
 		context = {'message': 'success'}
 		return JsonResponse({'message':'Availability Updated'})
 
