@@ -4,14 +4,17 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/css/bootstrap-slider.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
 <style>
+	thead th {
+		text-align: center;
+	}
+	thead th:nth-child(1) {
+		text-align: left;
+	}	
+	td {
+		text-align: center;
+	}
 	.slider-selection {
 		background: #CCC;
-	}
-	td:nth-child(3) {
-		text-align: right;
-	}	
-	td:nth-child(5) {
-		text-align: left;
 	}
 </style>
 {% endblock %}
@@ -19,108 +22,129 @@
 {% block content %}
 <div class="row">
 	<div class='col-md-offset-2 col-md-8'>
-
-<h1>{{ user }}'s Availability</h1>
-<table class="table">
-  	<thead>
- 		<tr>
- 			<th>Day</th>
- 			<th>Available?</th>
- 			<th>Time</th>
- 			<th style='text-align: right;'><small>*Click 'Yes/No' then slide to adjust time</small></th>
- 		</tr>
- 	</thead>
- <tbody>
- 	<tr>
- 		<th>Monday</th>
- 		<td>
- 			<input class='monday' type='checkbox'>
- 		</td>
- 		<td>
-			<span id='mondayTime' class='time'></span>
-		</td>
-		<td>
-				<input class='slideInput' id="monday" type="text"/>
-		</td>
-	</tr>
-	<tr>
-		<th>Tuesday</th>
-		<td>
- 			<input class='tuesday' type='checkbox'>
- 		</td>
-		<td>
-			<span id='tuesdayTime' class='time'></span>
-		</td>
-		<td>	
-				<input class='slideInput' id="tuesday" type="text"/>
-		</td>
-	</tr>
-	<tr>
-		<th>Wednesday</th>
-		<td>
- 			<input class='wednesday' type='checkbox'>
- 		</td>
-		<td>
-			<span id='wednesdayTime' class='time'></span>
-		</td>
-		<td>	
-				<input class='slideInput' id="wednesday" type="text"/>
-		</td>
-	</tr>
-	<tr>
-		<th>Thursday</th>
-		<td>
- 			<input class='thursday' type='checkbox'>
- 		</td>
-		<td>
-			<span id='thursdayTime' class='time'></span>
-		</td>
-		<td>	
-				<input class='slideInput' id="thursday" type="text"/>
-		</td>
-	</tr>
-	<tr>
-		<th>Friday</th>
-		<td>
- 			<input class='friday' type='checkbox'>
- 		</td>
-		<td>
-			<span id='fridayTime' class='time'></span>
-		</td>
-		<td>	
-				<input class='slideInput' id="friday" type="text"/>
-		</td>
-	</tr>			
-	<tr>
-		<th>Saturday</th>
-		<td>
- 			<input class='saturday' type='checkbox'>
- 		</td>
-		<td>
-			<span id='saturdayTime' class='time'></span>
-		</td>
-		<td>	
-				<input class='slideInput' id="saturday" type="text"/>
-		</td>
-	</tr>
-	<tr>
-		<th>Sunday</th>
-		<td>
- 			<input class='sunday' type='checkbox'>
- 		</td>
-		<td>
-			<span id='sundayTime' class='time'></span>
-		</td>
-		<td>	
-			<input class='slideInput' id="sunday" type="text" disable/>
-		</td>
-	</tr>	
-</tbody>
-
-</table>
-
+		<div class='row'>
+			<h1>{{ user }}'s Availability</h1>
+			<ul class="list-group">
+				 <li class="list-group-item list-group-item-info">
+				 	<div class='row'>
+						<div class='col-xs-12 col-sm-4'>Timezone:
+						</div>
+						<div class='col-xs-12 col-sm-8'>
+							<div id='timezoneDiv'>
+								<select id='timezoneMenu'>
+								</select>
+							</div>
+							<small>*Timezone not correct? Select from menu.</small>
+						</div>
+					</div>
+				 </li>
+			</ul>
 		</div>
+		<div class='row'>
+			<table class="table">
+			  	<thead>
+			 		<tr>
+			 			<th>Day</th>
+			 			<th>Available?</th>
+			 			<th>Time</th>
+			 			<th style='text-align: right;'><small>*Slide to adjust time</small></th>
+			 		</tr>
+			 	</thead>
+			 <tbody>
+			 	<tr>
+			 		<th style='width: 5%'>Monday</th>
+			 		<td>
+			 			<input class='monday' type='checkbox'>
+			 		</td>
+			 		<td style='width: 35%'>
+						<span id='mondayTime' class='time'></span>
+					</td>
+					<td>
+							<input class='slideInput' id="monday" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<th>Tuesday</th>
+					<td>
+			 			<input class='tuesday' type='checkbox'>
+			 		</td>
+					<td>
+						<span id='tuesdayTime' class='time'></span>
+					</td>
+					<td>	
+							<input class='slideInput' id="tuesday" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<th>Wednesday</th>
+					<td>
+			 			<input class='wednesday' type='checkbox'>
+			 		</td>
+					<td>
+						<span id='wednesdayTime' class='time'></span>
+					</td>
+					<td>	
+							<input class='slideInput' id="wednesday" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<th>Thursday</th>
+					<td>
+			 			<input class='thursday' type='checkbox'>
+			 		</td>
+					<td>
+						<span id='thursdayTime' class='time'></span>
+					</td>
+					<td>	
+							<input class='slideInput' id="thursday" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<th>Friday</th>
+					<td>
+			 			<input class='friday' type='checkbox'>
+			 		</td>
+					<td>
+						<span id='fridayTime' class='time'></span>
+					</td>
+					<td>	
+							<input class='slideInput' id="friday" type="text"/>
+					</td>
+				</tr>			
+				<tr>
+					<th>Saturday</th>
+					<td>
+			 			<input class='saturday' type='checkbox'>
+			 		</td>
+					<td>
+						<span id='saturdayTime' class='time'></span>
+					</td>
+					<td>	
+							<input class='slideInput' id="saturday" type="text"/>
+					</td>
+				</tr>
+				<tr>
+					<th>Sunday</th>
+					<td>
+			 			<input class='sunday' type='checkbox'>
+			 		</td>
+					<td>
+						<span id='sundayTime' class='time'></span>
+					</td>
+					<td>	
+						<input class='slideInput' id="sunday" type="text" disable/>
+					</td>
+				</tr>	
+			</tbody>
+
+			</table>
+		</div>
+		<div class='row text-center'>
+			<button type="button" class="btn btn-success btn-lg">Update Availability</button>
+		</div>
+
 	</div>
+<span id='storedTz' style='display: none'>{{ timezone }}</span>
 </div>
 {% endblock %}
 
@@ -129,6 +153,7 @@
 {{ block.super }}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/bootstrap-slider.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function() {
@@ -159,7 +184,7 @@ $(document).ready(function() {
 	});
 
 	function formatTime(time) {
-		var period = ' am';
+		var period = 'am';
 		var time = String(time).split('.');
 		var hours = time[0];
 
@@ -168,12 +193,12 @@ $(document).ready(function() {
 		} else if (hours.length > 1 && hours >= 12) {
 			if (hours > 12 && hours <= 23) {
 				hours = hours % 12;
-				period = ' pm';
+				period = 'pm';
 			} else if (hours == 24){
 				hours = 12;
-				period = ' am';
+				period = 'am';
 			} else {
-				period = ' pm';
+				period = 'pm';
 			}
 
 		}
@@ -274,6 +299,29 @@ $(document).ready(function() {
 
 	var timesArray = JSON.parse(TIMES).times;
 	initTimes(timesArray);
+
+
+	// Timezones
+	var listTz = jstz.olson.timezones;
+	var userTz = jstz.determine().name();
+
+	var storedTz = $('#storedTz').text();
+
+	(function populateTimezoneMenu() {
+		for (var tz in listTz) {
+			var tz = listTz[tz];
+			var value = tz;
+			var option
+			$('#timezoneMenu').append('<option value=' + value +'>' +  value + '</option>')
+		}
+	}());
+
+	if (storedTz) {
+		$('div#timezoneDiv select').val(storedTz);
+	} else {
+		$('div#timezoneDiv select').val(userTz);
+	}
+
 
 
 });
