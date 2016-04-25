@@ -173,16 +173,6 @@ $(document).ready(function() {
 
 	});
 
-	$("input.slideInput").slider({
-		step: .5, 
-		min: 0, 
-		max: 24, 
-		value: [7, 17],
-		tooltip: 'hide', 
-		focus: true,
-		enabled: false 
-	});
-
 	function formatTime(time) {
 		var time = String(time).split('.');
 
@@ -199,6 +189,27 @@ $(document).ready(function() {
 		}
 
 		return hours + minutes;
+
+	}
+
+	function timeToNumber(time) {
+		var time = time.split(':');
+
+		if(!time[0] && !time[1]) {
+			return null;
+		}
+
+		if (time[0][0] == '0') {
+			number = time[0][1];
+		} else {
+			number = time[0];
+		}
+
+		if (time[1] == '30') {
+			number += '.5';
+		}
+
+		return Number(number);
 
 	}
 
@@ -219,23 +230,50 @@ $(document).ready(function() {
 
 	var DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-	function parseTimes(day, start, end) {
+
+	function initControls(day, start, end) {
 		var daySlider = $('input[type="text"]#' + day);
-		daySlider.slider("enable");
-		$('input[type="checkbox"].' + day ).bootstrapSwitch('state', true, true);
+		var enabled = true;
+
 		var startSpan = $('#' + day + 'Start');
 		var endSpan = $('#' + day + 'End');
+
+		if(!start || !end) {
+			start = 7;
+			end = 17;
+			enabled = false;
+			startSpan.addClass('hide');
+			endSpan.addClass('hide');			
+		}
+
+		daySlider.slider({
+			step: .5, 
+			min: 0, 
+			max: 24, 
+			value: [start, end],
+			tooltip: 'hide', 
+			focus: true,
+			enabled: enabled
+		});
+
+		$('input[type="checkbox"].' + day ).bootstrapSwitch('state', enabled, enabled);
+
 		startSpan.text(formatTime(start));
 		endSpan.text(formatTime(end));
+	} // end initControls
+
+
+	function parseTimes(day, start, end) {
+		var start = timeToNumber(start);
+		var end = timeToNumber(end);
+		initControls(day, start, end);
 	}
 
 	function initTimes(times) {
 		for (var el in times) {
 			var day = times[el];
-			if (day.start && day.end) {
-				var dayName = DAYS[Number(day.day)];
-				parseTimes(dayName, day.start, day.end);
-			}
+			var dayName = DAYS[Number(day.day)];
+			parseTimes(dayName, day.start, day.end);
 		}
 	}
 
@@ -247,4 +285,3 @@ $(document).ready(function() {
 </script>
 
 {% endblock %}
-
