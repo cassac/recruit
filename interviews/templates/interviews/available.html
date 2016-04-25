@@ -162,6 +162,8 @@
 {{ block.super }}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/bootstrap-slider.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.3/moment-timezone-with-data-2010-2020.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js"></script>
 <script type="text/javascript">
 
@@ -180,14 +182,16 @@ $(document).ready(function() {
 		var day = event.target.className;
 		var daySlider = $('input[type="text"]#' + day);
 		var timeSpan = $('span#' + day + 'Time');
+		var slideInput = $('#' + day + '.slideInput');
 
 		if (state) {
 			daySlider.slider("enable");
 			timeSpan.removeClass('hide');
-
+			slideInput.addClass('inputOn');
 		} else {
 			daySlider.slider("disable");
 			timeSpan.addClass('hide');
+			slideInput.removeClass('inputOn');
 		}
 
 	});
@@ -265,7 +269,7 @@ $(document).ready(function() {
 	function initControls(day, start, end) {
 		var daySlider = $('input[type="text"]#' + day);
 		var enabled = true;
-
+		var slideInput = $('#' + day + '.slideInput');
 		var timeSpan = $('span#' + day + 'Time');
 
 		if(!start || !end) {
@@ -273,6 +277,8 @@ $(document).ready(function() {
 			end = 17;
 			enabled = false;
 			timeSpan.addClass('hide');		
+		} else {
+			slideInput.addClass('inputOn');
 		}
 
 		daySlider.slider({
@@ -353,7 +359,53 @@ $(document).ready(function() {
 		$('#updateBtn').before(alert);
 	}
 
+	function momentHourMinuteParse(number) {
+		var time = String(number).split('.');
+		var hour = time[0];
+		var minute = '';
+
+		if (time.length > 1) {
+			minute = '30';
+		} 
+
+		return [hour, minute];
+
+	}
+
+	function convertToUTC(array) {
+
+		var utcDaysTimes = {};
+
+		$(array).each(function(i, el) {
+			var dayOfWeekStr = el.id;
+			var dayOfWeekInt = DAYS_OF_WEEK.indexOf(el.id);
+			var times = el.value.split(',');
+			var start = momentHourMinuteParse(timeToNumber(times[0]));
+			var end = momentHourMinuteParse(timeToNumber(times[1]));
+
+			var selectedTz = $('div#timezoneDiv select').val();
+
+			var localStart = moment().tz(selectedTz);
+			localStart.day(dayOfWeekStr).hour(start[0]).minute(start[1]);
+
+			var localEnd = moment().tz(selectedTz);
+			localEnd.day(dayOfWeekStr).hour(end[0]).minute(end[1]);
+
+			var utcStart = localStart.tz('UTC').format('HH:mm');
+			var utcEnd = localEnd.tz('UTC').format('HH:mm');
+
+			utcDaysTimes[dayOfWeekInt] = {'start': utcStart, 'end': utcEnd};
+
+		});
+
+		return utcDaysTimes;
+	}
+
 	$('#updateBtn').on('click', function(event) {
+
+		var selectedTimeRangesLocal = $('input.inputOn');
+		var utcTimes = convertToUTC(selectedTimeRangesLocal);
+		console.log(JSON.stringify(utcTimes[0]));
 		$.ajaxSetup({
 		    headers: { "X-CSRFToken": getCookie("csrftoken") }
 		});
@@ -361,10 +413,10 @@ $(document).ready(function() {
 		$.ajax({
 			type: 'POST',
 			url: '/available/2/',
+			data: {'availability': JSON.stringify(utcTimes) },
 			success: function(data) {
 				displayAlert(data.message);
-			},
-			dataType: "json"
+			}
 		})
 
 	});
