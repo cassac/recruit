@@ -4,9 +4,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.0/css/bootstrap-slider.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css">
 <style>
-	td {
-		text-align: center;
-	}
 	.slider-selection {
 		background: #CCC;
 	}
@@ -21,7 +18,7 @@
 
 {% block content %}
 <div class="row">
-	<div class='col-md-offset-3 col-md-6'>
+	<div class='col-md-offset-2 col-md-8'>
 
 <h1>{{ user }}'s Availability</h1>
 <table class="table">
@@ -29,9 +26,8 @@
  		<tr>
  			<th>Day</th>
  			<th>Available?</th>
- 			<th>Start Time</th>
- 			<th>Time Range</th>
- 			<th>End Time</th>
+ 			<th>Time</th>
+ 			<th style='text-align: right;'><small>*Click 'Yes/No' then slide to adjust time</small></th>
  		</tr>
  	</thead>
  <tbody>
@@ -42,12 +38,11 @@
  		</td>
  		<td>
 			<span id='mondayStart' class='start'></span>
+			-
+			<span id='mondayEnd' class='end'></span>
 		</td>
 		<td>
 				<input class='slideInput' id="monday" type="text"/>
-		</td>
-		<td>
-			<span id='mondayEnd' class='end'>17:00 PM</span>
 		</td>
 	</tr>
 	<tr>
@@ -57,12 +52,11 @@
  		</td>
 		<td>
 			<span id='tuesdayStart' class='start'></span>
+			-
+			<span id='tuesdayEnd' class='end'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="tuesday" type="text"/>
-		</td>
-		<td>
-			<span id='tuesdayEnd' class='end'>17:00 PM</span>
 		</td>
 	</tr>
 	<tr>
@@ -72,12 +66,11 @@
  		</td>
 		<td>
 			<span id='wednesdayStart' class='start'></span>
+			-
+			<span id='wednesdayEnd' class='end'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="wednesday" type="text"/>
-		</td>
-		<td>
-			<span id='wednesdayEnd' class='end'>17:00 PM</span>
 		</td>
 	</tr>
 	<tr>
@@ -87,12 +80,11 @@
  		</td>
 		<td>
 			<span id='thursdayStart' class='start'></span>
+			-
+			<span id='thursdayEnd' class='end'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="thursday" type="text"/>
-		</td>
-		<td>
-			<span id='thursdayEnd' class='end'>17:00 PM</span>
 		</td>
 	</tr>
 	<tr>
@@ -102,12 +94,11 @@
  		</td>
 		<td>
 			<span id='fridayStart' class='start'></span>
+			-
+			<span id='fridayEnd' class='end'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="friday" type="text"/>
-		</td>
-		<td>
-			<span id='fridayEnd' class='end'>17:00 PM</span>
 		</td>
 	</tr>			
 	<tr>
@@ -117,12 +108,11 @@
  		</td>
 		<td>
 			<span id='saturdayStart' class='start'></span>
+			-
+			<span id='saturdayEnd' class='end'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="saturday" type="text"/>
-		</td>
-		<td>
-			<span id='saturdayEnd' class='end'>17:00 PM</span>
 		</td>
 	</tr>
 	<tr>
@@ -132,12 +122,11 @@
  		</td>
 		<td>
 			<span id='sundayStart' class='start'></span>
+			-
+			<span id='sundayEnd' class='end'></span>
 		</td>
 		<td>	
-				<input class='slideInput' id="sunday" type="text" disable/>
-		</td>
-		<td>
-			<span id='sundayEnd' class='end'>17:00 PM</span>
+			<input class='slideInput' id="sunday" type="text" disable/>
 		</td>
 	</tr>	
 </tbody>
@@ -173,13 +162,11 @@ $(document).ready(function() {
 
 		if (state) {
 			daySlider.slider("enable");
-			console.log('enable it');
 			spanStart.removeClass('hide');
 			spanEnd.removeClass('hide');
 
 		} else {
 			daySlider.slider("disable");
-			console.log('disable it');
 			spanStart.addClass('hide');
 			spanEnd.addClass('hide');
 		}
@@ -228,6 +215,32 @@ $(document).ready(function() {
 		
 	});
 
+	var TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
+
+	var DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+	function parseTimes(day, start, end) {
+		var daySlider = $('input[type="text"]#' + day);
+		daySlider.slider("enable");
+		$('input[type="checkbox"].' + day ).bootstrapSwitch('state', true, true);
+		var startSpan = $('#' + day + 'Start');
+		var endSpan = $('#' + day + 'End');
+		startSpan.text(formatTime(start));
+		endSpan.text(formatTime(end));
+	}
+
+	function initTimes(times) {
+		for (var el in times) {
+			var day = times[el];
+			if (day.start && day.end) {
+				var dayName = DAYS[Number(day.day)];
+				parseTimes(dayName, day.start, day.end);
+			}
+		}
+	}
+
+	var timesArray = JSON.parse(TIMES).times;
+	initTimes(timesArray);
 
 
 });
