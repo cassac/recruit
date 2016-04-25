@@ -37,9 +37,7 @@
  			<input class='monday' type='checkbox'>
  		</td>
  		<td>
-			<span id='mondayStart' class='start'></span>
-			-
-			<span id='mondayEnd' class='end'></span>
+			<span id='mondayTime' class='time'></span>
 		</td>
 		<td>
 				<input class='slideInput' id="monday" type="text"/>
@@ -51,9 +49,7 @@
  			<input class='tuesday' type='checkbox'>
  		</td>
 		<td>
-			<span id='tuesdayStart' class='start'></span>
-			-
-			<span id='tuesdayEnd' class='end'></span>
+			<span id='tuesdayTime' class='time'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="tuesday" type="text"/>
@@ -65,9 +61,7 @@
  			<input class='wednesday' type='checkbox'>
  		</td>
 		<td>
-			<span id='wednesdayStart' class='start'></span>
-			-
-			<span id='wednesdayEnd' class='end'></span>
+			<span id='wednesdayTime' class='time'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="wednesday" type="text"/>
@@ -79,9 +73,7 @@
  			<input class='thursday' type='checkbox'>
  		</td>
 		<td>
-			<span id='thursdayStart' class='start'></span>
-			-
-			<span id='thursdayEnd' class='end'></span>
+			<span id='thursdayTime' class='time'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="thursday" type="text"/>
@@ -93,9 +85,7 @@
  			<input class='friday' type='checkbox'>
  		</td>
 		<td>
-			<span id='fridayStart' class='start'></span>
-			-
-			<span id='fridayEnd' class='end'></span>
+			<span id='fridayTime' class='time'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="friday" type="text"/>
@@ -107,9 +97,7 @@
  			<input class='saturday' type='checkbox'>
  		</td>
 		<td>
-			<span id='saturdayStart' class='start'></span>
-			-
-			<span id='saturdayEnd' class='end'></span>
+			<span id='saturdayTime' class='time'></span>
 		</td>
 		<td>	
 				<input class='slideInput' id="saturday" type="text"/>
@@ -121,9 +109,7 @@
  			<input class='sunday' type='checkbox'>
  		</td>
 		<td>
-			<span id='sundayStart' class='start'></span>
-			-
-			<span id='sundayEnd' class='end'></span>
+			<span id='sundayTime' class='time'></span>
 		</td>
 		<td>	
 			<input class='slideInput' id="sunday" type="text" disable/>
@@ -159,29 +145,37 @@ $(document).ready(function() {
 
 		var day = event.target.className;
 		var daySlider = $('input[type="text"]#' + day);
-		var spanStart = $('span#' + day + 'Start');
-		var spanEnd = $('span#' + day + 'End');
+		var timeSpan = $('span#' + day + 'Time');
 
 		if (state) {
 			daySlider.slider("enable");
-			spanStart.removeClass('hide');
-			spanEnd.removeClass('hide');
+			timeSpan.removeClass('hide');
 
 		} else {
 			daySlider.slider("disable");
-			spanStart.addClass('hide');
-			spanEnd.addClass('hide');
+			timeSpan.addClass('hide');
 		}
 
 	});
 
 	function formatTime(time) {
+		var period = ' am';
 		var time = String(time).split('.');
+		var hours = time[0];
 
-		if (time[0].length < 2) {
-			hours = '0'.concat(time[0])
-		} else {
-			hours = time[0]
+		if (hours == '0') {
+			hours = 12;
+		} else if (hours.length > 1 && hours >= 12) {
+			if (hours > 12 && hours <= 23) {
+				hours = hours % 12;
+				period = ' pm';
+			} else if (hours == 24){
+				hours = 12;
+				period = ' am';
+			} else {
+				period = ' pm';
+			}
+
 		}
 
 		if (time.length>1) {
@@ -190,9 +184,15 @@ $(document).ready(function() {
 			minutes = ':00';
 		}
 
-		return hours + minutes;
+		return hours + minutes + period;
 
 	}
+
+	function formatTimeRange(start, end) {
+
+		return start + " - " + end;
+
+	} 
 
 	function timeToNumber(time) {
 		var time = time.split(':');
@@ -217,14 +217,12 @@ $(document).ready(function() {
 
 	$("input.slideInput").on('change', function(event){
 		var dayOfWeek = event.target.id;
-		var startSpan = $('#' + dayOfWeek + 'Start');
-		var endSpan = $('#' + dayOfWeek + 'End');
+		var timeSpan = $('#' + dayOfWeek + 'Time');
 
 		var startTime = formatTime(event.value.newValue[0]);
 		var endTime = formatTime(event.value.newValue[1]);
 
-		startSpan.text(startTime);
-		endSpan.text(endTime);
+		timeSpan.text(formatTimeRange(startTime, endTime));
 		
 	});
 
@@ -234,15 +232,13 @@ $(document).ready(function() {
 		var daySlider = $('input[type="text"]#' + day);
 		var enabled = true;
 
-		var startSpan = $('#' + day + 'Start');
-		var endSpan = $('#' + day + 'End');
+		var timeSpan = $('span#' + day + 'Time');
 
 		if(!start || !end) {
 			start = 7;
 			end = 17;
 			enabled = false;
-			startSpan.addClass('hide');
-			endSpan.addClass('hide');			
+			timeSpan.addClass('hide');		
 		}
 
 		daySlider.slider({
@@ -257,8 +253,8 @@ $(document).ready(function() {
 
 		$('input[type="checkbox"].' + day ).bootstrapSwitch('state', enabled, enabled);
 
-		startSpan.text(formatTime(start));
-		endSpan.text(formatTime(end));
+
+		timeSpan.text(formatTimeRange(formatTime(start), formatTime(end)));
 	} // end initControls
 
 
