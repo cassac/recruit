@@ -33,12 +33,12 @@ class Available(models.Model):
 	day_of_week = models.IntegerField()
 	timeslot_begin = models.CharField(max_length=5)
 	timeslot_end = models.CharField(max_length=5)
-	baseuser = models.OneToOneField(BaseUser)
+	baseuser = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)	
 
 	def __str__(self):
-		return '<Available: day(%s) %s-%s>' % (self.day_of_week, self.timeslot_begin, self.timeslot_end)
+		return 'day(%s) %s-%s' % (self.day_of_week, self.timeslot_begin, self.timeslot_end)
 
 
 class Exclusion(models.Model):
