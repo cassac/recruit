@@ -8,7 +8,7 @@
 		text-align: center;
 	}
 	thead th:nth-child(1) {
-		text-align: left;
+		text-align: right;
 	}	
 	td {
 		text-align: center;
@@ -17,9 +17,11 @@
 		background: #CCC;
 	}
 </style>
+<meta name="csrf-token" content="{{csrf_token}}">
 {% endblock %}
 
 {% block content %}
+
 <div class="row">
 	<div class='col-md-offset-2 col-md-8'>
 		<div class='row'>
@@ -44,19 +46,20 @@
 			<table class="table">
 			  	<thead>
 			 		<tr>
-			 			<th>Day</th>
+			 			<!-- <th>Day</th> -->
 			 			<th>Available?</th>
 			 			<th>Time</th>
-			 			<th style='text-align: right;'><small>*Slide to adjust time</small></th>
+			 			<th><small>*Slide to adjust time range</small></th>
 			 		</tr>
 			 	</thead>
 			 <tbody>
 			 	<tr>
-			 		<th style='width: 5%'>Monday</th>
-			 		<td>
+			 		<th style='width: 35%'>Monday
+			 		<span class='pull-right'>
 			 			<input class='monday' type='checkbox'>
-			 		</td>
-			 		<td style='width: 35%'>
+					</span>
+			 		</th>
+			 		<td>
 						<span id='mondayTime' class='time'></span>
 					</td>
 					<td>
@@ -64,10 +67,11 @@
 					</td>
 				</tr>
 				<tr>
-					<th>Tuesday</th>
-					<td>
+					<th>Tuesday
+					<span class='pull-right'>
 			 			<input class='tuesday' type='checkbox'>
-			 		</td>
+					</span>
+			 		</th>
 					<td>
 						<span id='tuesdayTime' class='time'></span>
 					</td>
@@ -76,10 +80,11 @@
 					</td>
 				</tr>
 				<tr>
-					<th>Wednesday</th>
-					<td>
+					<th>Wednesday
+					<span class='pull-right'>
 			 			<input class='wednesday' type='checkbox'>
-			 		</td>
+					</span>
+			 	</th>
 					<td>
 						<span id='wednesdayTime' class='time'></span>
 					</td>
@@ -88,10 +93,11 @@
 					</td>
 				</tr>
 				<tr>
-					<th>Thursday</th>
-					<td>
+					<th>Thursday
+					<span class='pull-right'>
 			 			<input class='thursday' type='checkbox'>
-			 		</td>
+					</span>
+			 	</th>
 					<td>
 						<span id='thursdayTime' class='time'></span>
 					</td>
@@ -100,10 +106,11 @@
 					</td>
 				</tr>
 				<tr>
-					<th>Friday</th>
-					<td>
+					<th>Friday
+					<span class='pull-right'>
 			 			<input class='friday' type='checkbox'>
-			 		</td>
+					</span>
+			 		</th>
 					<td>
 						<span id='fridayTime' class='time'></span>
 					</td>
@@ -112,10 +119,11 @@
 					</td>
 				</tr>			
 				<tr>
-					<th>Saturday</th>
-					<td>
+					<th>Saturday
+				<span class='pull-right'>
 			 			<input class='saturday' type='checkbox'>
-			 		</td>
+					</span>
+			 	</th>
 					<td>
 						<span id='saturdayTime' class='time'></span>
 					</td>
@@ -124,10 +132,11 @@
 					</td>
 				</tr>
 				<tr>
-					<th>Sunday</th>
-					<td>
+					<th>Sunday
+					<span class='pull-right'>
 			 			<input class='sunday' type='checkbox'>
-			 		</td>
+					</span>
+			 	</th>
 					<td>
 						<span id='sundayTime' class='time'></span>
 					</td>
@@ -140,7 +149,7 @@
 			</table>
 		</div>
 		<div class='row text-center'>
-			<button type="button" class="btn btn-success btn-lg">Update Availability</button>
+			<button id='updateBtn' type="button" class="btn btn-success btn-lg">Update Availability</button>
 		</div>
 
 	</div>
@@ -278,7 +287,6 @@ $(document).ready(function() {
 
 		$('input[type="checkbox"].' + day ).bootstrapSwitch('state', enabled, enabled);
 
-
 		timeSpan.text(formatTimeRange(formatTime(start), formatTime(end)));
 	} // end initControls
 
@@ -322,6 +330,44 @@ $(document).ready(function() {
 		$('div#timezoneDiv select').val(userTz);
 	}
 
+
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie != '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+	    return cookieValue;
+	}
+
+	function displayAlert(message) {
+		$('.alert').remove();
+		var alert = '<div role="alert" class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>' + message + '</div>';
+		$('#updateBtn').before(alert);
+	}
+
+	$('#updateBtn').on('click', function(event) {
+		$.ajaxSetup({
+		    headers: { "X-CSRFToken": getCookie("csrftoken") }
+		});
+
+		$.ajax({
+			type: 'POST',
+			url: '/available/2/',
+			success: function(data) {
+				displayAlert(data.message);
+			},
+			dataType: "json"
+		})
+
+	});
 
 
 });
