@@ -31,11 +31,15 @@ class InterviewRequest(models.Model):
 
 class Available(models.Model):
 	day_of_week = models.IntegerField()
-	timeslot_begin = models.TimeField()
-	timeslot_end = models.TimeField()
+	timeslot_begin = models.CharField(max_length=5)
+	timeslot_end = models.CharField(max_length=5)
 	baseuser = models.OneToOneField(BaseUser)
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)	
+
+	def __str__(self):
+		return '<Available: day(%s) %s-%s>' % (self.day_of_week, self.timeslot_begin, self.timeslot_end)
+
 
 class Exclusion(models.Model):
 	date = models.DateField()
