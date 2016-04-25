@@ -12,7 +12,7 @@
 	}	
 	td:nth-child(5) {
 		text-align: left;
-	}	
+	}
 </style>
 {% endblock %}
 
@@ -147,6 +147,8 @@
 
 $(document).ready(function() {
 
+	var DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
 	var checkboxes = $("[type='checkbox']");
 	checkboxes.attr('data-size', 'mini');
 	checkboxes.attr('data-on-text', 'Yes');
@@ -228,9 +230,6 @@ $(document).ready(function() {
 
 	var TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
 
-	var DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-
 	function initControls(day, start, end) {
 		var daySlider = $('input[type="text"]#' + day);
 		var enabled = true;
@@ -272,7 +271,7 @@ $(document).ready(function() {
 	function initTimes(times) {
 		for (var el in times) {
 			var day = times[el];
-			var dayName = DAYS[Number(day.day)];
+			var dayName = DAYS_OF_WEEK[Number(day.day)];
 			parseTimes(dayName, day.start, day.end);
 		}
 	}
