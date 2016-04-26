@@ -249,7 +249,7 @@ $(document).ready(function() {
 			number += '.5';
 		}
 
-		return Number(number);
+		return Number(number) || 0;
 
 	}
 
@@ -325,7 +325,6 @@ $(document).ready(function() {
 		for (var tz in listTz) {
 			var tz = listTz[tz];
 			var value = tz;
-			var option
 			$('#timezoneMenu').append('<option value=' + value +'>' +  value + '</option>')
 		}
 	}());
@@ -372,6 +371,10 @@ $(document).ready(function() {
 
 	}
 
+	function zeroBasedDay(momentObj) {
+		return momentObj.isoWeekday() - 1;
+	}
+
 	function convertToUTC(array) {
 
 		var utcDaysTimes = {};
@@ -380,6 +383,7 @@ $(document).ready(function() {
 			var dayOfWeekStr = el.id;
 			var dayOfWeekInt = DAYS_OF_WEEK.indexOf(el.id);
 			var times = el.value.split(',');
+
 			var start = momentHourMinuteParse(timeToNumber(times[0]));
 			var end = momentHourMinuteParse(timeToNumber(times[1]));
 
@@ -391,10 +395,58 @@ $(document).ready(function() {
 			var localEnd = moment().tz(selectedTz);
 			localEnd.day(dayOfWeekStr).hour(end[0]).minute(end[1]);
 
-			var utcStart = localStart.tz('UTC').format('HH:mm');
-			var utcEnd = localEnd.tz('UTC').format('HH:mm');
+			var utcStart = localStart.tz('UTC');
+			var utcEnd = localEnd.tz('UTC');
 
-			utcDaysTimes[dayOfWeekInt] = {'start': utcStart, 'end': utcEnd};
+			var utcStartDayOfWeek = zeroBasedDay(utcStart);
+			var utcEndDayOfWeek = zeroBasedDay(utcEnd);
+
+
+			// Accounts for converted time ranges spanning more than one day
+			if (utcStartDayOfWeek != utcEndDayOfWeek) {
+
+				var priorDayStart = utcStart.day(DAYS_OF_WEEK[utcStartDayOfWeek]).format('HH:mm');
+				var priorDayEnd = utcStart.hour(23).minute(59).format('HH:mm');
+
+				if (priorDayStart == priorDayEnd) {
+					return;
+				}
+
+				if (!utcDaysTimes[utcStartDayOfWeek]) {
+					utcDaysTimes[utcStartDayOfWeek] = [];
+				}
+
+				utcDaysTimes[utcStartDayOfWeek].push({'start': priorDayStart, 'end': priorDayEnd });
+
+
+				var currentDayEnd = utcEnd.format('HH:mm');
+				var currentDayStart = utcEnd.hour(0).minute(0).format('HH:mm');
+
+				if (currentDayStart == currentDayEnd) {
+					return;
+				}
+
+				if (!utcDaysTimes[utcEndDayOfWeek]) {
+					utcDaysTimes[utcEndDayOfWeek] = [];
+				}
+
+				utcDaysTimes[utcEndDayOfWeek].push({'start': currentDayStart, 'end': currentDayEnd });
+
+			} else {
+
+				if (!utcDaysTimes[dayOfWeekInt]) {
+					utcDaysTimes[dayOfWeekInt] = [];
+				}
+				var utcDayStart = utcStart.format('HH:mm');
+				var utcDayEnd = utcEnd.format('HH:mm');
+
+				if (utcDayStart == utcDayEnd) {
+					return;
+				}
+
+				utcDaysTimes[dayOfWeekInt].push({'start': utcDayStart, 'end': utcDayEnd});
+
+			}
 
 		});
 
@@ -405,7 +457,7 @@ $(document).ready(function() {
 
 		var selectedTimeRangesLocal = $('input.inputOn');
 		var utcTimes = convertToUTC(selectedTimeRangesLocal);
-		console.log(JSON.stringify(utcTimes[0]));
+
 		$.ajaxSetup({
 		    headers: { "X-CSRFToken": getCookie("csrftoken") }
 		});
