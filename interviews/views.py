@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.http import JsonResponse
 
+from interviews.models import Available
 from accounts.models import BaseUser
 
 def available(request, bu_id):
@@ -12,9 +13,19 @@ def available(request, bu_id):
 		context = {'user': user.first_name, 'timezone': ''}
 
 	if request.method == 'POST':
-		availability = json.loads(request.POST.get('availability'))
-		for day, time in availability.items():
+		old_availability = user.available_set.all()
+		new_availability = json.loads(request.POST.get('availability'))
+		available_instances = []
+		for day, time in new_availability.items():
+			avail = Available(
+						day_of_week=int(day), 
+						time_start=time['start'], 
+						time_end=time['end'],
+						baseuser=user
+					)
+			available_instances.append(avail)
 			print(day, time['start'], time['end'])
+		print(available_instances)
 		context = {'message': 'success'}
 		return JsonResponse({'message':'Availability Updated'})
 
