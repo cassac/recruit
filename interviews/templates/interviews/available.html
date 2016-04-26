@@ -264,9 +264,9 @@ $(document).ready(function() {
 		
 	});
 
-	var TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
+	// var TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
 
-	// var NEW_TIMES = '{"0": [{"end": "12:00", "start": "06:00"}], "2": [{"end": "20:30", "start": "14:00"}], "3": [{"end": "12:30", "start": "06:00"}], "1": [{"end": "09:00", "start": "08:00"}]}';
+	var TIMES = '{"2": [{"start": "00:00", "end": "00:30"}, {"start": "20:00", "end": "23:59"}], "3": [{"start": "00:00", "end": "02:30"}, {"start": "12:00", "end": "22:00"}], "1": [{"start": "00:00", "end": "01:00"}, {"start": "06:30", "end": "23:59"}], "0": [{"start": "06:00", "end": "23:59"}], "4": [{"start": "11:00", "end": "21:00"}]}';
 
 
 	function initControls(day, start, end) {
@@ -306,34 +306,66 @@ $(document).ready(function() {
 		initControls(day, start, end);
 	}
 
-	function initTimes(times) {
+	function getRealEnd(array) {
+		return array.filter(function(el) { return el.start == '00:00'});
+	}
+
+	function convertToLocal(availObj) {
+
+		for (var a in availObj) {
+			var dayOfWeekInt = Number(a);
+			var ranges = availObj[dayOfWeekInt];
+			for (var range in ranges) {
+				range = ranges[range];
+				var day = dayOfWeekInt;
+				var start = range.start;
+				var end = range.end;
+				if (range.end == '23:59') {
+					var nextDay = availObj[dayOfWeekInt + 1];
+					end = getRealEnd(nextDay)[0].end;
+				}
+
+				console.log('day: ', day, ' Range: ', start, end)
+
+			}
+			console.log(a, availObj[a])
+		}
+
+	}
+
+	function initTimes(availObj) {
 		// for (var avail in availObj) {
 		// 	console.log(avail)
 		// }
-		for (var el in times) {
-			var day = times[el];
-			var dayName = DAYS_OF_WEEK[Number(day.day)];
-			parseTimes(dayName, day.start, day.end);
-		}
+
+		convertToLocal(availObj)
+		// var times = need number for the day, start time and end time
+		// [{"day": 0, "start": "08:00", "end": "14:00"}, ...
+
+		// for (var el in times) {
+		// 	var day = times[el];
+		// 	var dayName = DAYS_OF_WEEK[Number(day.day)];
+		// 	parseTimes(dayName, day.start, day.end);
+		// }
 	}
 
-	var timesArray = JSON.parse(TIMES).times;
+	var timesArray = JSON.parse(TIMES);
 	initTimes(timesArray);
 
-	$.ajax({
-		type: 'GET',
-		url: '/availability/2/',
-		contentType: 'application/json;charset=UTF-8',
-  		dataType: "json",
-  		success: function(res) {
-  			var availability = JSON.parse(res.availability);
-  			// initTimes(availability);
-  			// console.log('res: ', res);
-  		},
-  		error: function(err) {
-  			console.log('error: ', err);
-  		}
-	})
+	// $.ajax({
+	// 	type: 'GET',
+	// 	url: '/availability/2/',
+	// 	contentType: 'application/json;charset=UTF-8',
+ //  		dataType: "json",
+ //  		success: function(res) {
+ //  			var availability = JSON.parse(res.availability);
+ //  			// initTimes(availability);
+ //  			// console.log('res: ', res);
+ //  		},
+ //  		error: function(err) {
+ //  			console.log('error: ', err);
+ //  		}
+	// })
 
 
 	// Timezones
