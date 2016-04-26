@@ -14,6 +14,12 @@ from accounts.models import BaseUser
 
 def available(request, bu_id):
 	user = BaseUser.objects.get(id=bu_id)
+	context = {'user': user}
+
+	return render(request, 'interviews/available.html', context)
+
+def availability(request, bu_id):
+	user = BaseUser.objects.get(id=bu_id)
 	if request.method == 'GET':
 		user_availabiity = user.available_set.all()
 		availability_dict = {}
@@ -25,7 +31,7 @@ def available(request, bu_id):
 			availability_dict[day_of_week].append(temp)
 		availability = json.dumps(availability_dict)
 		print(availability)
-		context = {'user': user, 'availability': availability}
+		return JsonResponse({'availability': availability})
 
 	if request.method == 'POST':
 		old_availability = user.available_set.all()
@@ -44,5 +50,3 @@ def available(request, bu_id):
 		Available.objects.bulk_create(available_instances)
 		context = {'message': 'success'}
 		return JsonResponse({'message':'Availability Updated'})
-
-	return render(request, 'interviews/available.html', context)

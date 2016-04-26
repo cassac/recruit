@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
     url(r'^available/(?P<bu_id>[0-9])/$', interviewsViews.available, name='available'),
+    url(r'^availability/(?P<bu_id>[0-9])/$', interviewsViews.availability, name='availability'),
 ]
 
 if settings.DEBUG:
