@@ -16,16 +16,17 @@ def available(request, bu_id):
 		old_availability = user.available_set.all()
 		new_availability = json.loads(request.POST.get('availability'))
 		available_instances = []
-		for day, time in new_availability.items():
-			avail = Available(
-						day_of_week=int(day), 
-						time_start=time['start'], 
-						time_end=time['end'],
-						baseuser=user
-					)
-			available_instances.append(avail)
-			print(day, time['start'], time['end'])
-		print(available_instances)
+		for day, times in new_availability.items():
+			for time in times:
+				avail = Available(
+							day_of_week=int(day), 
+							time_start=time['start'], 
+							time_end=time['end'],
+							baseuser=user
+						)
+				available_instances.append(avail)
+		old_availability.delete()
+		Available.objects.bulk_create(available_instances)
 		context = {'message': 'success'}
 		return JsonResponse({'message':'Availability Updated'})
 
