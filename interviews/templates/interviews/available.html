@@ -169,7 +169,29 @@
 
 $(document).ready(function() {
 
+
+
+	var TIMES = '{"1": [{"end": "04:30", "start": "00:00"}, {"end": "23:59", "start": "09:30"}], "0": [{"end": "23:59", "start": "09:00"}], "2": [{"end": "03:30", "start": "00:00"}, {"end": "17:00", "start": "09:30"}], "3": [{"end": "23:59", "start": "19:00"}], "4": [{"end": "06:00", "start": "00:00"}]}';
+
 	var DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+	// Timezones
+	var listTz = jstz.olson.timezones;
+	var userTz = jstz.determine().name();
+	var storedTz = $('#storedTz').text();
+	var USER_TZ = storedTz.length > 0 ? storedTz : userTz;
+
+
+	(function populateTimezoneMenu() {
+		for (var tz in listTz) {
+			var tz = listTz[tz];
+			var value = tz;
+			$('#timezoneMenu').append('<option value=' + value +'>' +  value + '</option>')
+		}
+	}());
+
+	$('div#timezoneDiv select').val(USER_TZ);
+
 
 	var checkboxes = $("[type='checkbox']");
 	checkboxes.attr('data-size', 'mini');
@@ -233,6 +255,7 @@ $(document).ready(function() {
 	} 
 
 	function timeToNumber(time) {
+		console.log('time: ', time)
 		var time = time.split(':');
 
 		if(!time[0] && !time[1]) {
@@ -263,10 +286,6 @@ $(document).ready(function() {
 		timeSpan.text(formatTimeRange(startTime, endTime));
 		
 	});
-
-	// var TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
-
-	var TIMES = '{"2": [{"start": "00:00", "end": "00:30"}, {"start": "20:00", "end": "23:59"}], "3": [{"start": "00:00", "end": "02:30"}, {"start": "12:00", "end": "22:00"}], "1": [{"start": "00:00", "end": "01:00"}, {"start": "06:30", "end": "23:59"}], "0": [{"start": "06:00", "end": "23:59"}], "4": [{"start": "11:00", "end": "21:00"}]}';
 
 
 	function initControls(day, start, end) {
@@ -307,12 +326,26 @@ $(document).ready(function() {
 	}
 
 	function getRealEnd(array) {
+		console.log(array)
 		return array.filter(function(el) { return el.start == '00:00'});
 	}
 
-	function convertToLocal(availObj) {
+	function makeUTCAware(availObj) {
+
+		utcTimes = [];
 
 		for (var a in availObj) {
+
+			function inPrevDay(end, day) {
+				ranges = availObj[day];
+				for (var range in ranges) {
+					if (ranges[range].end == end) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			var dayOfWeekInt = Number(a);
 			var ranges = availObj[dayOfWeekInt];
 			for (var range in ranges) {
@@ -320,73 +353,104 @@ $(document).ready(function() {
 				var day = dayOfWeekInt;
 				var start = range.start;
 				var end = range.end;
+
+				var utcDay = moment.tz('UTC').day(day + 1); // week starts on Monday so + 1
+				// console.log('utcDay: ', utcDay.format())
+				var utcStart = utcDay.clone()
+				utcStart.hour(start.substring(0, 2)).minute(start.substring(3, 5))
+				// console.log('utcStart: ', utcStart.format())
+				var utcEnd = utcDay.clone()
+				utcEnd.hour(end.substring(0, 2)).minute(end.substring(3, 5))
+				// console.log('utcEnd: ', utcEnd.format())
+
+				// console.log('AND AGAIN: ', utcDay.format(), utcStart.format(), utcEnd.format())
+
 				if (range.end == '23:59') {
+					console.log('day of week: ', dayOfWeekInt)
 					var nextDay = availObj[dayOfWeekInt + 1];
-					end = getRealEnd(nextDay)[0].end;
+					console.log('currentDay: ', dayOfWeekInt, 'nextDay: ', nextDay)
+					var endTime = getRealEnd(nextDay)[0].end;
+					console.log('end: ', endTime)
+					utcEnd.add(1, 'days'); 
+					utcEnd.hour(endTime.substring(0, 2)).minute(endTime.substring(3, 5));
 				}
 
-				console.log('day: ', day, ' Range: ', start, end)
+				if (range.start == '00:00' && inPrevDay(end, day)) {
+					console.log('skip')
+					continue;
+				}
 
+				var awareDay = moment.tz('UTC').day(day + 1);
+				// console.log('awareDay', awareDay.format(), 'day: ', day, ' Range: ', start, end)
+				// console.log('awareDay', awareDay.format(), 'utcDay: ', utcDay.format(), ' UTCRange: ', utcStart.format(), utcEnd.format())
+
+				utcTimes.push({day: day, start: utcStart, end: utcEnd});
 			}
-			console.log(a, availObj[a])
+			// console.log(a, availObj[a])
 		}
+
+		return utcTimes;
+
+	}
+
+	var OLD_TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
+
+	var TARGET_FORMAT = [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]
+
+	function makeLocalAware(array) {
+
+		var formatted = [];
+
+		for (var i in array) {
+			var obj = {
+				day: array[i].day,
+				start: array[i].start.tz(USER_TZ).format('HH:mm'), // assigns local start time
+				end: array[i].end.tz(USER_TZ).format('HH:mm') // assigns local end time
+			}
+			formatted.push(obj);
+		}
+
+		// return formatted;
+		return TARGET_FORMAT;
 
 	}
 
 	function initTimes(availObj) {
 		// for (var avail in availObj) {
-		// 	console.log(avail)
+		// 	console.log(availObj[avail])
 		// }
-
-		convertToLocal(availObj)
+		localTimes = makeLocalAware([])
+		// localTimes = makeLocalAware(makeUTCAware(availObj));
+		// console.log(localTimes)
 		// var times = need number for the day, start time and end time
 		// [{"day": 0, "start": "08:00", "end": "14:00"}, ...
 
-		// for (var el in times) {
-		// 	var day = times[el];
-		// 	var dayName = DAYS_OF_WEEK[Number(day.day)];
-		// 	parseTimes(dayName, day.start, day.end);
-		// }
-	}
-
-	var timesArray = JSON.parse(TIMES);
-	initTimes(timesArray);
-
-	// $.ajax({
-	// 	type: 'GET',
-	// 	url: '/availability/2/',
-	// 	contentType: 'application/json;charset=UTF-8',
- //  		dataType: "json",
- //  		success: function(res) {
- //  			var availability = JSON.parse(res.availability);
- //  			// initTimes(availability);
- //  			// console.log('res: ', res);
- //  		},
- //  		error: function(err) {
- //  			console.log('error: ', err);
- //  		}
-	// })
-
-
-	// Timezones
-	var listTz = jstz.olson.timezones;
-	var userTz = jstz.determine().name();
-
-	var storedTz = $('#storedTz').text();
-
-	(function populateTimezoneMenu() {
-		for (var tz in listTz) {
-			var tz = listTz[tz];
-			var value = tz;
-			$('#timezoneMenu').append('<option value=' + value +'>' +  value + '</option>')
+		console.log(localTimes)
+		for (var el in localTimes) {
+			var day = localTimes[el];
+			var dayName = DAYS_OF_WEEK[Number(day.day)];
+			parseTimes(dayName, day.start, day.end);
 		}
-	}());
-
-	if (storedTz) {
-		$('div#timezoneDiv select').val(storedTz);
-	} else {
-		$('div#timezoneDiv select').val(userTz);
 	}
+
+	// var timesArray = JSON.parse(TIMES);
+	// initTimes(timesArray);
+
+	$.ajax({
+		type: 'GET',
+		url: '/availability/2/',
+		contentType: 'application/json;charset=UTF-8',
+  		dataType: "json",
+  		success: function(res) {
+  			var availability = JSON.parse(res.availability);
+  			initTimes(availability);
+  			// console.log('res: ', res);
+  		},
+  		error: function(err) {
+  			console.log('error: ', err);
+  		}
+	})
+
 
 
 	function getCookie(name) {
