@@ -9,7 +9,6 @@ from accounts.models import BaseUser
 def available(request, bu_id):
 	user = BaseUser.objects.get(id=bu_id)
 	context = {'user': user}
-
 	return render(request, 'interviews/available.html', context)
 
 def availability(request, bu_id):
@@ -24,7 +23,6 @@ def availability(request, bu_id):
 				"end": avail.time_end
 			}
 			availability.append(temp)
-
 		availability = json.dumps(availability)
 		return JsonResponse({'availability': availability})
 
@@ -46,5 +44,4 @@ def availability(request, bu_id):
 		if timezone != user.timezone:
 			user.timezone = timezone
 			user.save()		
-		context = {'message': 'success'}
 		return JsonResponse({'message':'Availability Updated'})
