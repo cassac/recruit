@@ -18,7 +18,7 @@
 	}
 </style>
 <meta name="csrf-token" content="{{csrf_token}}">
-{% endblock %}
+{% endblock head %}
 
 {% block content %}
 
@@ -160,7 +160,7 @@
 <span id='storedTz' style='display: none'>{{ user.timezone }}</span>
 <span id='refId' style='display: none'>{{ user.id }}</span>
 </div>
-{% endblock %}
+{% endblock content %}
 
 
 {% block scripts %}
@@ -175,6 +175,21 @@
 $(document).ready(function() {
 
 
+	window.onbeforeunload = function (e) {
+	  if(DATA_CHANGED) {
+		  var message = 'Did you want to save your updated times? Click the green button "Update Availability" to complete the update.',
+		  e = e || window.event;
+		  // For IE and Firefox
+		  if (e) {
+		    e.returnValue = message;
+		  }
+
+		  // For Safari
+		  return message;
+
+	  }
+	};
+
 	var DAYS_OF_WEEK = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 	// Timezones
@@ -183,7 +198,8 @@ $(document).ready(function() {
 	var storedTz = $('#storedTz').text();
 	var REF_ID = $('#refId').text();
 	var USER_TZ = storedTz.length > 0 ? storedTz : userTz;
-	// console.log('USER_TZ: ', USER_TZ)
+	var DATA_CHANGED = false;
+
 
 	function selectedTZVal() {
 		return $('div#timezoneDiv select').val();
@@ -209,6 +225,7 @@ $(document).ready(function() {
 
 	$('input[type="checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
 
+		DATA_CHANGED = true;
 		var day = event.target.className;
 		var switchBtn = $('input[type=checkbox].' + day);
 		var rangeSlider = $('input[type="text"].' + day);
@@ -227,7 +244,6 @@ $(document).ready(function() {
 	});
 
 	function populateSpan(day, start, end) {
-		// console.log('populateSpan: ', day, start, end)
 		var start = formatTime(start);
 		var end = formatTime(end);
 		var dayInt = DAYS_OF_WEEK.indexOf(day);
@@ -244,40 +260,19 @@ $(document).ready(function() {
 	}
 
 	$("input[type=text]").on('change', function(event){
-		// console.log('changed switch', event.value.newValue)
+		DATA_CHANGED = true;
 		var day = event.target.className.split(' ')[0]; // may have multiple classes `monday switchOn`
-		// var dayInt = DAYS_OF_WEEK.indexOf(day);
-		// console.log('dayInt:', dayInt)
 		var start = event.value.newValue[0]; // returns [hour, minutes]
 		var end = event.value.newValue[1]; // returns [hour, minutes]
 		populateSpan(day, start, end);
-		// console.log('start: ', start, 'end', end)
-		// var startMoment = moment().day(dayInt).hour(start[0]).minutes(start[1]).seconds(0);
-		// var endMoment = moment().day(dayInt).hour(end[0]).minutes(end[1]).seconds(0);
-
-		// if (end[0] == '24:00') {
-		// 	endMoment.add(1, 'day');
-		// }
-
-		// var spanText = startMoment.format('h:mm a') + ' - ' + endMoment.format('h:mm a');
-		// $('span.' + day).text(spanText);
-		// console.log('LocalTime:', dayInt, startMoment.format(), endMoment.format())
-		// console.log('UTCTime:', dayInt, startMoment.tz('UTC').format(), endMoment.tz('UTC').format())
-
-		
 	});	
 
 
 	function createUTCTimes(obj) {
-
 		var start = formatTime(obj.start);
 		var end = formatTime(obj.end);
 		var startMoment = moment().tz(selectedTZVal()).day(obj.day).hour(start[0]).minutes(start[1]).seconds(0).tz('UTC');
 		var endMoment = moment().tz(selectedTZVal()).day(obj.day).hour(end[0]).minutes(end[1]).seconds(0).tz('UTC');
-		// if (end[0] == '24') {
-		// 	endMoment.add(1, 'day');
-		// }
-		// console.log('createUTCTimes: ', startMoment.format(), endMoment.format());
 		obj.start = startMoment.format();
 		obj.end = endMoment.format();
 
@@ -287,7 +282,6 @@ $(document).ready(function() {
 
 
 	function sliderValuesToTimes(sliderInputs) {
-
 		var utcTimes = [];
 		for (var i = 0; i < sliderInputs.length; i++) {
 			var slider = sliderInputs[i];
@@ -299,9 +293,7 @@ $(document).ready(function() {
 			if (start == end) { // ignore if start and end times the same
 				continue;
 			}
-			// console.log('sliderValuesToTimes: BEFORE',dayInt, start, end )
 			utcTimes.push(createUTCTimes({'day': dayInt, 'start': start, 'end': end}));
-			// console.log('sliderValuesToTimes: AFTER',dayInt, start, end )
 		}
 
 		return utcTimes;
@@ -310,18 +302,11 @@ $(document).ready(function() {
 
 
 	$('#updateBtn').on('click', function(event) {
-
 		var rangesValues = $('input.inputOn')
-		// console.log(rangesValues);
 		var utcTimes = sliderValuesToTimes(rangesValues);
-		console.log(utcTimes)
-
 		var selectedTZ = $('div#timezoneDiv select').val()
 		var data = {'availability': JSON.stringify(utcTimes),
 					'timezone': JSON.stringify(selectedTZ) };
-		// var json = JSON.stringify(data);
-
-		// console.log(json)
 
 		$.ajaxSetup({
 		    headers: { "X-CSRFToken": getCookie("csrftoken") }
@@ -332,9 +317,14 @@ $(document).ready(function() {
 			url: '/availability/' + REF_ID + '/',
 			data: data,
 			success: function(data) {
-				displayAlert(data.message);
+				displayAlert(data.message, 'success');
+			}, 
+			error: function(err) {
+				displayAlert('Error. Please contact your coordinator.', 'danger')
 			}
 		})
+
+		DATA_CHANGED = false;
 
 	});
 
@@ -347,28 +337,21 @@ $(document).ready(function() {
 			contentType: 'application/json;charset=UTF-8',
 	  		dataType: "json",
 	  		success: function(res) {
-	  			// console.log('res: ', res)
 	  			var availability = JSON.parse(res.availability);
-	  			// console.log(Object.keys(availability))
 				if (!Object.keys(availability).length) { // if availability is empty
 					populateBlanks([0,1,2,3,4,5,6]);
-					console.log('populating fresh')
 				} else {
 					populateAvailability(availability);
-					// console.log(availability)
 				}
-
 	  		},
 	  		error: function(err) {
-	  			console.log('error: ', err);
+	  			alert('Error accessing availability. Please contact the administrator.');
 	  		}
 		})		
-
 	})();
 
 
 	function createSlider(el, start, end, enabled) {
-
 		if(typeof start == 'undefined') { var start = 7 };
 		if(typeof end == 'undefined') { var end = 17 };
 		if(typeof enabled == 'undefined') { var enabled = false };
@@ -382,7 +365,7 @@ $(document).ready(function() {
 			focus: true,
 			enabled: enabled
 		});
-		// console.log('createSlider: ', el, start, end)
+
 		return el;
 
 	}
@@ -396,7 +379,6 @@ $(document).ready(function() {
 			var sliderEl = $('input[type="text"].' + day);
 			createSlider(sliderEl);
 			populateSpan(day, 7, 17); // hard coded defaults
-			// console.log('populateBlanks populateSpan: ', day, 7, 17)
 		}
 	} // end `populateBlanks`
 
@@ -417,15 +399,10 @@ $(document).ready(function() {
 			var sliderValues = formatSliderValues(range.start, range.end); // returns ie. [2, 22.5]
 			var sliderStart = sliderValues[0];
 			var sliderEnd = sliderValues[1];
-			// console.log(sliderStart, sliderEnd);
-			// console.log('populateAvailability: ', sliderStart, sliderEnd)
 			createSlider(sliderEl, sliderStart, sliderEnd, true);
-
-			// eliminates populated days from array
-			blankDays.splice(blankDays.indexOf(Number(range.day)), 1);
+			blankDays.splice(blankDays.indexOf(Number(range.day)), 1); // eliminates populated days from array
 		}
 		populateBlanks(blankDays); // populate remaining days
-		// console.log('populating with availability!!!');
 	} // end `populateAvailability`
 
 
@@ -444,7 +421,6 @@ $(document).ready(function() {
 
 
 	function formatSliderValues(startMoment, endMoment) {
-
 		var start, end, startHour, startMinute, endHour, endMinute;
 
 		if (startMoment.day() < endMoment.day()) {
@@ -456,7 +432,7 @@ $(document).ready(function() {
 		startHour = startMoment.hour();
 		startMinute = startMoment.minute() == 0 ? 0 : 0.5;
 		endMinute = endMoment.minute() == 0 ? 0 : 0.5;
-		// console.log(startHour, startMinute, endHour, endMinute)
+
 		start = startHour + startMinute;
 		end = endHour + endMinute;
 
@@ -504,9 +480,9 @@ $(document).ready(function() {
 	}
 
 
-	function displayAlert(message) {
+	function displayAlert(message, type) {
 		$('.alert').remove();
-		var alert = '<div role="alert" class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>' + message + '</div>';
+		var alert = '<div role="alert" class="alert alert-' + type + '"><button type="button" class="close" data-dismiss="alert">&times;</button>' + message + '</div>';
 		$('#updateBtn').before(alert);
 	}
 
@@ -514,4 +490,4 @@ $(document).ready(function() {
 });
 </script>
 
-{% endblock %}
+{% endblock scripts %}
