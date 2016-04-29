@@ -60,10 +60,10 @@
 					</span>
 			 		</th>
 			 		<td>
-						<span id='mondayTime' class='time'></span>
+						<span class='monday'></span>
 					</td>
 					<td>
-							<input class='slideInput' id="monday" type="text"/>
+						<input class='monday' type="text"/>
 					</td>
 				</tr>
 				<tr>
@@ -73,10 +73,10 @@
 					</span>
 			 		</th>
 					<td>
-						<span id='tuesdayTime' class='time'></span>
+						<span class='tuesday'></span>
 					</td>
 					<td>	
-							<input class='slideInput' id="tuesday" type="text"/>
+						<input class='tuesday' type="text"/>
 					</td>
 				</tr>
 				<tr>
@@ -86,10 +86,10 @@
 					</span>
 			 	</th>
 					<td>
-						<span id='wednesdayTime' class='time'></span>
+						<span class='wednesday'></span>
 					</td>
 					<td>	
-							<input class='slideInput' id="wednesday" type="text"/>
+							<input class='wednesday' type="text"/>
 					</td>
 				</tr>
 				<tr>
@@ -99,10 +99,10 @@
 					</span>
 			 	</th>
 					<td>
-						<span id='thursdayTime' class='time'></span>
+						<span class='thursday'></span>
 					</td>
 					<td>	
-							<input class='slideInput' id="thursday" type="text"/>
+							<input class='thursday' type="text"/>
 					</td>
 				</tr>
 				<tr>
@@ -112,10 +112,10 @@
 					</span>
 			 		</th>
 					<td>
-						<span id='fridayTime' class='time'></span>
+						<span class='friday'></span>
 					</td>
 					<td>	
-							<input class='slideInput' id="friday" type="text"/>
+						<input class='friday' type="text"/>
 					</td>
 				</tr>			
 				<tr>
@@ -125,10 +125,10 @@
 					</span>
 			 	</th>
 					<td>
-						<span id='saturdayTime' class='time'></span>
+						<span class='saturday'></span>
 					</td>
 					<td>	
-							<input class='slideInput' id="saturday" type="text"/>
+							<input class='saturday' type="text"/>
 					</td>
 				</tr>
 				<tr>
@@ -138,10 +138,10 @@
 					</span>
 			 	</th>
 					<td>
-						<span id='sundayTime' class='time'></span>
+						<span class='sunday'></span>
 					</td>
 					<td>	
-						<input class='slideInput' id="sunday" type="text" disable/>
+						<input class='sunday' type="text"/>
 					</td>
 				</tr>	
 			</tbody>
@@ -154,6 +154,7 @@
 
 	</div>
 <span id='storedTz' style='display: none'>{{ user.timezone }}</span>
+<span id='refId' style='display: none'>{{ user.id }}</span>
 </div>
 {% endblock %}
 
@@ -170,15 +171,13 @@
 $(document).ready(function() {
 
 
-
-	var TIMES = '{"1": [{"end": "04:30", "start": "00:00"}, {"end": "23:59", "start": "09:30"}], "0": [{"end": "23:59", "start": "09:00"}], "2": [{"end": "03:30", "start": "00:00"}, {"end": "17:00", "start": "09:30"}], "3": [{"end": "23:59", "start": "19:00"}], "4": [{"end": "06:00", "start": "00:00"}]}';
-
-	var DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+	var DAYS_OF_WEEK = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 	// Timezones
 	var listTz = jstz.olson.timezones;
 	var userTz = jstz.determine().name();
 	var storedTz = $('#storedTz').text();
+	var REF_ID = $('#refId').text();
 	var USER_TZ = storedTz.length > 0 ? storedTz : userTz;
 
 
@@ -190,267 +189,275 @@ $(document).ready(function() {
 		}
 	}());
 
-	$('div#timezoneDiv select').val(USER_TZ);
+	$('div#timezoneDiv select').val(USER_TZ); // load user timezone into select menu
 
 
-	var checkboxes = $("[type='checkbox']");
+	var checkboxes = $("[type='checkbox']"); // initiate switches
 	checkboxes.attr('data-size', 'mini');
 	checkboxes.attr('data-on-text', 'Yes');
 	checkboxes.attr('data-off-text', 'No');
 	checkboxes.bootstrapSwitch();
 
+
 	$('input[type="checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
 
 		var day = event.target.className;
-		var daySlider = $('input[type="text"]#' + day);
-		var timeSpan = $('span#' + day + 'Time');
-		var slideInput = $('#' + day + '.slideInput');
+		var switchBtn = $('input[type=checkbox].' + day);
+		var rangeSlider = $('input[type="text"].' + day);
+		var rangeSpan = $('span.' + day);
 
 		if (state) {
-			daySlider.slider("enable");
-			timeSpan.removeClass('hide');
-			slideInput.addClass('inputOn');
+			rangeSlider.slider("enable");
+			rangeSlider.addClass('inputOn');
+			rangeSpan.removeClass('hide');
 		} else {
-			daySlider.slider("disable");
-			timeSpan.addClass('hide');
-			slideInput.removeClass('inputOn');
+			rangeSlider.slider("disable");
+			rangeSpan.addClass('hide');
+			rangeSlider.removeClass('inputOn');
 		}
 
 	});
 
-	function formatTime(time) {
-		var period = 'am';
-		var time = String(time).split('.');
-		var hours = time[0];
 
-		if (hours == '0') {
-			hours = 12;
-		} else if (hours.length > 1 && hours >= 12) {
-			if (hours > 12 && hours <= 23) {
-				hours = hours % 12;
-				period = 'pm';
-			} else if (hours == 24){
-				hours = 12;
-				period = 'am';
-			} else {
-				period = 'pm';
-			}
+	$("input[type=text]").on('change', function(event){
+		// console.log('changed switch')
+		var day = event.target.className.split(' ')[0]; // may have multiple classes `monday switchOn`
+		var dayInt = DAYS_OF_WEEK.indexOf(day);
+		// console.log('dayInt:', dayInt)
+		var start = formatTime(event.value.newValue[0]); // returns [hour, minutes]
+		var end = formatTime(event.value.newValue[1]); // returns [hour, minutes]
+		// console.log('start: ', start, 'end', end)
+		var startMoment = moment().day(dayInt).hour(start[0]).minutes(start[1]).seconds(0);
+		var endMoment = moment().day(dayInt).hour(end[0]).minutes(end[1]).seconds(0);
 
+		if (end[0] == '24:00') {
+			endMoment.add(1, 'day');
 		}
 
-		if (time.length>1) {
-			minutes = ':30'; 
-		} else {
-			minutes = ':00';
-		}
+		var spanText = startMoment.format('h:mm a') + ' - ' + endMoment.format('h:mm a');
+		$('span.' + day).text(spanText);
+		// console.log('LocalTime:', dayInt, startMoment.format(), endMoment.format())
+		// console.log('UTCTime:', dayInt, startMoment.tz('UTC').format(), endMoment.tz('UTC').format())
 
-		return hours + minutes + period;
-
-	}
-
-	function formatTimeRange(start, end) {
-
-		return start + " - " + end;
-
-	} 
-
-	function timeToNumber(time) {
-		console.log('time: ', time)
-		var time = time.split(':');
-
-		if(!time[0] && !time[1]) {
-			return null;
-		}
-
-		if (time[0][0] == '0') {
-			number = time[0][1];
-		} else {
-			number = time[0];
-		}
-
-		if (time[1] == '30') {
-			number += '.5';
-		}
-
-		return Number(number) || 0;
-
-	}
-
-	$("input.slideInput").on('change', function(event){
-		var dayOfWeek = event.target.id;
-		var timeSpan = $('#' + dayOfWeek + 'Time');
-
-		var startTime = formatTime(event.value.newValue[0]);
-		var endTime = formatTime(event.value.newValue[1]);
-
-		timeSpan.text(formatTimeRange(startTime, endTime));
 		
-	});
+	});	
 
 
-	function initControls(day, start, end) {
-		var daySlider = $('input[type="text"]#' + day);
-		var enabled = true;
-		var slideInput = $('#' + day + '.slideInput');
-		var timeSpan = $('span#' + day + 'Time');
+	function createUTCTimes(obj) {
 
-		if(!start || !end) {
-			start = 7;
-			end = 17;
-			enabled = false;
-			timeSpan.addClass('hide');		
-		} else {
-			slideInput.addClass('inputOn');
-		}
+		var start = formatTime(obj.start);
+		var end = formatTime(obj.end);
+		var startMoment = moment().day(obj.day).hour(start[0]).minutes(start[1]).seconds(0).tz('UTC');
+		var endMoment = moment().day(obj.day).hour(end[0]).minutes(end[1]).seconds(0).tz('UTC');
+		// if (end[0] == '24') {
+		// 	endMoment.add(1, 'day');
+		// }
+		// console.log('createUTCTimes: ', startMoment.format(), endMoment.format());
+		obj.start = startMoment.format();
+		obj.end = endMoment.format();
+		return obj;
 
-		daySlider.slider({
-			step: .5, 
-			min: 0, 
-			max: 24, 
-			value: [start, end],
-			tooltip: 'hide', 
-			focus: true,
-			enabled: enabled
-		});
-
-		$('input[type="checkbox"].' + day ).bootstrapSwitch('state', enabled, enabled);
-
-		timeSpan.text(formatTimeRange(formatTime(start), formatTime(end)));
-	} // end initControls
-
-
-	function parseTimes(day, start, end) {
-		var start = timeToNumber(start);
-		var end = timeToNumber(end);
-		initControls(day, start, end);
 	}
 
-	function getRealEnd(array) {
-		console.log(array)
-		return array.filter(function(el) { return el.start == '00:00'});
-	}
 
-	function makeUTCAware(availObj) {
+	function sliderValuesToTimes(sliderInputs) {
 
-		utcTimes = [];
-
-		for (var a in availObj) {
-
-			function inPrevDay(end, day) {
-				ranges = availObj[day];
-				for (var range in ranges) {
-					if (ranges[range].end == end) {
-						return true;
-					}
-				}
-				return false;
+		var utcTimes = [];
+		for (var i = 0; i < sliderInputs.length; i++) {
+			var slider = sliderInputs[i];
+			var day = slider.className.split(' ')[0];
+			var dayInt = DAYS_OF_WEEK.indexOf(day);
+			var values = slider.value.split(',')
+			var start = values[0]
+			var end = values[1]
+			if (start == end) { // ignore if start and end times the same
+				continue;
 			}
-
-			var dayOfWeekInt = Number(a);
-			var ranges = availObj[dayOfWeekInt];
-			for (var range in ranges) {
-				range = ranges[range];
-				var day = dayOfWeekInt;
-				var start = range.start;
-				var end = range.end;
-
-				var utcDay = moment.tz('UTC').day(day + 1); // week starts on Monday so + 1
-				// console.log('utcDay: ', utcDay.format())
-				var utcStart = utcDay.clone()
-				utcStart.hour(start.substring(0, 2)).minute(start.substring(3, 5))
-				// console.log('utcStart: ', utcStart.format())
-				var utcEnd = utcDay.clone()
-				utcEnd.hour(end.substring(0, 2)).minute(end.substring(3, 5))
-				// console.log('utcEnd: ', utcEnd.format())
-
-				// console.log('AND AGAIN: ', utcDay.format(), utcStart.format(), utcEnd.format())
-
-				if (range.end == '23:59') {
-					console.log('day of week: ', dayOfWeekInt)
-					var nextDay = availObj[dayOfWeekInt + 1];
-					console.log('currentDay: ', dayOfWeekInt, 'nextDay: ', nextDay)
-					var endTime = getRealEnd(nextDay)[0].end;
-					console.log('end: ', endTime)
-					utcEnd.add(1, 'days'); 
-					utcEnd.hour(endTime.substring(0, 2)).minute(endTime.substring(3, 5));
-				}
-
-				if (range.start == '00:00' && inPrevDay(end, day)) {
-					console.log('skip')
-					continue;
-				}
-
-				var awareDay = moment.tz('UTC').day(day + 1);
-				// console.log('awareDay', awareDay.format(), 'day: ', day, ' Range: ', start, end)
-				// console.log('awareDay', awareDay.format(), 'utcDay: ', utcDay.format(), ' UTCRange: ', utcStart.format(), utcEnd.format())
-
-				utcTimes.push({day: day, start: utcStart, end: utcEnd});
-			}
-			// console.log(a, availObj[a])
+			// console.log('sliderValuesToTimes: BEFORE',dayInt, start, end )
+			utcTimes.push(createUTCTimes({'day': dayInt, 'start': start, 'end': end}));
+			// console.log('sliderValuesToTimes: AFTER',dayInt, start, end )
 		}
 
 		return utcTimes;
 
 	}
 
-	var OLD_TIMES = '{"times": [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]}';
 
-	var TARGET_FORMAT = [{"day": 0, "start": "08:00", "end": "14:00"},{"day": 1, "start": "10:00", "end": "11:00"},{"day": 2, "start": "16:00", "end": "22:30"},{"day": 3, "start": "08:00", "end": "14:30"},{"day": 4, "start": "", "end": ""},{"day": 5, "start": "", "end": ""},{"day": 6, "start": "", "end": ""}]
+	$('#updateBtn').on('click', function(event) {
 
-	function makeLocalAware(array) {
+		var rangesValues = $('input.inputOn')
+		// console.log(rangesValues);
+		var utcTimes = sliderValuesToTimes(rangesValues);
+		console.log(utcTimes)
 
-		var formatted = [];
+		console.log(JSON.stringify(utcTimes))
 
-		for (var i in array) {
-			var obj = {
-				day: array[i].day,
-				start: array[i].start.tz(USER_TZ).format('HH:mm'), // assigns local start time
-				end: array[i].end.tz(USER_TZ).format('HH:mm') // assigns local end time
+
+		$.ajaxSetup({
+		    headers: { "X-CSRFToken": getCookie("csrftoken") }
+		});
+
+		$.ajax({
+			type: 'POST',
+			url: '/availability/' + REF_ID + '/',
+			data: {'availability': JSON.stringify(utcTimes) },
+			success: function(data) {
+				displayAlert(data.message);
 			}
-			formatted.push(obj);
-		}
+		})
 
-		// return formatted;
-		return TARGET_FORMAT;
+	});
 
-	}
 
-	function initTimes(availObj) {
-		// for (var avail in availObj) {
-		// 	console.log(availObj[avail])
-		// }
-		localTimes = makeLocalAware([])
-		// localTimes = makeLocalAware(makeUTCAware(availObj));
-		// console.log(localTimes)
-		// var times = need number for the day, start time and end time
-		// [{"day": 0, "start": "08:00", "end": "14:00"}, ...
-
-		console.log(localTimes)
-		for (var el in localTimes) {
-			var day = localTimes[el];
-			var dayName = DAYS_OF_WEEK[Number(day.day)];
-			parseTimes(dayName, day.start, day.end);
+	function populateSpan(array) {
+		for (var i in array) {
+			moment().tz(USER_TZ)
 		}
 	}
 
-	// var timesArray = JSON.parse(TIMES);
-	// initTimes(timesArray);
 
-	$.ajax({
-		type: 'GET',
-		url: '/availability/2/',
-		contentType: 'application/json;charset=UTF-8',
-  		dataType: "json",
-  		success: function(res) {
-  			var availability = JSON.parse(res.availability);
-  			initTimes(availability);
-  			// console.log('res: ', res);
-  		},
-  		error: function(err) {
-  			console.log('error: ', err);
-  		}
-	})
+	(function requestAvailability() {
 
+		$.ajax({
+			type: 'GET',
+			url: '/availability/' + REF_ID + '/',
+			contentType: 'application/json;charset=UTF-8',
+	  		dataType: "json",
+	  		success: function(res) {
+	  			// console.log('res: ', res)
+	  			var availability = JSON.parse(res.availability);
+	  			// console.log(Object.keys(availability))
+				if (!Object.keys(availability).length) { // if availability is empty
+					populateBlanks([0,1,2,3,4,5,6]);
+					console.log('populating fresh')
+				} else {
+					populateAvailability(availability);
+					// console.log(availability)
+				}
+
+	  		},
+	  		error: function(err) {
+	  			console.log('error: ', err);
+	  		}
+		})		
+
+	})();
+
+
+	function createSlider(el, start, end, enabled) {
+
+		if(typeof start == 'undefined') { var start = 7 };
+		if(typeof end == 'undefined') { var end = 17 };
+		if(typeof enabled == 'undefined') { var enabled = false };
+
+		el.slider({
+			step: .5, 
+			min: 0, 
+			max: 24, 
+			value: [start, end],
+			// tooltip: 'hide', 
+			focus: true,
+			enabled: enabled
+		});
+		// console.log('createSlider: ', el, start, end)
+		return el;
+
+	}
+
+
+	function populateBlanks(array) {
+		for (var idx in array) {
+			var dayInt = array[idx];
+			var day = DAYS_OF_WEEK[dayInt];
+			$('span.' + day).addClass('hide');
+			var sliderEl = $('input[type="text"].' + day);
+			createSlider(sliderEl);
+		}
+	} // end `populateBlanks`
+
+
+	function populateAvailability(array) {
+		var blankDays = [0,1,2,3,4,5,6]; // left over days will be dealt with following for loop
+		var array = makeTZAware(array, 'UTC', USER_TZ);
+		for (var idx in array) {
+			var range = array[idx];
+			var day = DAYS_OF_WEEK[Number(range.day)];
+			var start = range.start;
+			var end = range.end;
+			var spanText = start.format('h:mm a') + ' - ' + end.format('h:mm a');
+			$('span.' + day).text(spanText);
+			$('input[type="checkbox"].' + day).bootstrapSwitch('state', true, true);
+			var sliderEl = $('input[type="text"].' + day);
+			sliderEl.addClass('inputOn'); // inputOn used to detect times when submit button clicked
+			var sliderValues = formatSliderValues(range.start, range.end); // returns ie. [2, 22.5]
+			var sliderStart = sliderValues[0];
+			var sliderEnd = sliderValues[1];
+			// console.log(sliderStart, sliderEnd);
+			// console.log('populateAvailability: ', sliderStart, sliderEnd)
+			createSlider(sliderEl, sliderStart, sliderEnd, true);
+
+			// eliminates populated days from array
+			blankDays.splice(blankDays.indexOf(Number(range.day)), 1);
+		}
+		populateBlanks(blankDays); // populate remaining days
+		// console.log('populating with availability!!!');
+	} // end `populateAvailability`
+
+
+	function makeTZAware(array, fromTZ, toTZ) {
+		for (var range in array) {
+			var range = array[range];
+			var start = moment(range.start).tz(fromTZ);
+			var end = moment(range.end).tz(fromTZ);
+			range.start = start.tz(toTZ);
+			range.end = end.tz(toTZ);
+		}
+
+		return array;
+	
+	} // end `makeTZAware`
+
+
+	function formatSliderValues(startMoment, endMoment) {
+
+		var start, end, startHour, startMinute, endHour, endMinute;
+
+		if (startMoment.day() < endMoment.day()) {
+			endHour = 24; // User selected range end time of 12:00am (which is following day)
+		} else {
+			endHour = endMoment.hour();
+		}
+
+		startHour = startMoment.hour();
+		startMinute = startMoment.minute() == 0 ? 0 : 0.5;
+		endMinute = endMoment.minute() == 0 ? 0 : 0.5;
+		// console.log(startHour, startMinute, endHour, endMinute)
+		start = startHour + startMinute;
+		end = endHour + endMinute;
+
+		return [start, end];
+
+	}
+
+
+	function formatTime(time) {
+		// example IO: 0.5 >> 00:30 , 8.5 >> 08:30 , 20 >> 20:00 , 24 >> 24:00
+		var time = String(time).split('.');
+		var hours = time[0];
+
+		while (hours.length < 2) {
+			hours = '0' + hours;
+		}
+
+		if (time.length>1) {
+			minutes = '30'; 
+		} else {
+			minutes = '00';
+		}
+
+		return [hours, minutes];
+
+	}
 
 
 	function getCookie(name) {
@@ -469,126 +476,12 @@ $(document).ready(function() {
 	    return cookieValue;
 	}
 
+
 	function displayAlert(message) {
 		$('.alert').remove();
 		var alert = '<div role="alert" class="alert alert-success"><button type="button" class="close" data-dismiss="alert">&times;</button>' + message + '</div>';
 		$('#updateBtn').before(alert);
 	}
-
-	function momentHourMinuteParse(number) {
-		var time = String(number).split('.');
-		var hour = time[0];
-		var minute = '';
-
-		if (time.length > 1) {
-			minute = '30';
-		} 
-
-		return [hour, minute];
-
-	}
-
-	function zeroBasedDay(momentObj) {
-		return momentObj.isoWeekday() - 1;
-	}
-
-	function convertToUTC(array) {
-
-		var utcDaysTimes = {};
-
-		$(array).each(function(i, el) {
-			var dayOfWeekStr = el.id;
-			var dayOfWeekInt = DAYS_OF_WEEK.indexOf(el.id);
-			var times = el.value.split(',');
-
-			var start = momentHourMinuteParse(timeToNumber(times[0]));
-			var end = momentHourMinuteParse(timeToNumber(times[1]));
-
-			var selectedTz = $('div#timezoneDiv select').val();
-
-			var localStart = moment().tz(selectedTz);
-			localStart.day(dayOfWeekStr).hour(start[0]).minute(start[1]);
-
-			var localEnd = moment().tz(selectedTz);
-			localEnd.day(dayOfWeekStr).hour(end[0]).minute(end[1]);
-
-			var utcStart = localStart.tz('UTC');
-			var utcEnd = localEnd.tz('UTC');
-
-			var utcStartDayOfWeek = zeroBasedDay(utcStart);
-			var utcEndDayOfWeek = zeroBasedDay(utcEnd);
-
-
-			// Accounts for converted time ranges spanning more than one day
-			if (utcStartDayOfWeek != utcEndDayOfWeek) {
-
-				var priorDayStart = utcStart.day(DAYS_OF_WEEK[utcStartDayOfWeek]).format('HH:mm');
-				var priorDayEnd = utcStart.hour(23).minute(59).format('HH:mm');
-
-				if (priorDayStart == priorDayEnd) {
-					return;
-				}
-
-				if (!utcDaysTimes[utcStartDayOfWeek]) {
-					utcDaysTimes[utcStartDayOfWeek] = [];
-				}
-
-				utcDaysTimes[utcStartDayOfWeek].push({'start': priorDayStart, 'end': priorDayEnd });
-
-
-				var currentDayEnd = utcEnd.format('HH:mm');
-				var currentDayStart = utcEnd.hour(0).minute(0).format('HH:mm');
-
-				if (currentDayStart == currentDayEnd) {
-					return;
-				}
-
-				if (!utcDaysTimes[utcEndDayOfWeek]) {
-					utcDaysTimes[utcEndDayOfWeek] = [];
-				}
-
-				utcDaysTimes[utcEndDayOfWeek].push({'start': currentDayStart, 'end': currentDayEnd });
-
-			} else {
-
-				if (!utcDaysTimes[dayOfWeekInt]) {
-					utcDaysTimes[dayOfWeekInt] = [];
-				}
-				var utcDayStart = utcStart.format('HH:mm');
-				var utcDayEnd = utcEnd.format('HH:mm');
-
-				if (utcDayStart == utcDayEnd) {
-					return;
-				}
-
-				utcDaysTimes[dayOfWeekInt].push({'start': utcDayStart, 'end': utcDayEnd});
-
-			}
-
-		});
-
-		return utcDaysTimes;
-	}
-
-	$('#updateBtn').on('click', function(event) {
-
-		var selectedTimeRangesLocal = $('input.inputOn');
-		var utcTimes = convertToUTC(selectedTimeRangesLocal);
-
-		$.ajaxSetup({
-		    headers: { "X-CSRFToken": getCookie("csrftoken") }
-		});
-
-		$.ajax({
-			type: 'POST',
-			url: '/availability/2/',
-			data: {'availability': JSON.stringify(utcTimes) },
-			success: function(data) {
-				displayAlert(data.message);
-			}
-		})
-
-	});
 
 
 });

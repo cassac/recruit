@@ -22,30 +22,33 @@ def availability(request, bu_id):
 	user = BaseUser.objects.get(id=bu_id)
 	if request.method == 'GET':
 		user_availabiity = user.available_set.all()
-		availability_dict = {}
+		availability = []
 		for avail in user_availabiity:
-			temp = {"start": avail.time_start, "end": avail.time_end}
-			day_of_week = str(avail.day_of_week)
-			if day_of_week not in availability_dict:
-				availability_dict[day_of_week] = []
-			availability_dict[day_of_week].append(temp)
-		availability = json.dumps(availability_dict)
+			temp = {
+				"day": str(avail.day_of_week),
+				"start": avail.time_start, 
+				"end": avail.time_end
+			}
+			availability.append(temp)
+
+		availability = json.dumps(availability)
 		print(availability)
 		return JsonResponse({'availability': availability})
 
 	if request.method == 'POST':
 		old_availability = user.available_set.all()
 		new_availability = json.loads(request.POST.get('availability'))
+		print(new_availability)
 		available_instances = []
-		for day, times in new_availability.items():
-			for time in times:
-				avail = Available(
-							day_of_week=int(day), 
-							time_start=time['start'], 
-							time_end=time['end'],
-							baseuser=user
-						)
-				available_instances.append(avail)
+		for time_range in new_availability:
+			avail = Available(
+						day_of_week=int(time_range['day']), 
+						time_start=time_range['start'], 
+						time_end=time_range['end'],
+						baseuser=user
+					)
+			available_instances.append(avail)
+		print(available_instances)
 		old_availability.delete()
 		Available.objects.bulk_create(available_instances)
 		context = {'message': 'success'}
