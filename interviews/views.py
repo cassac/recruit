@@ -32,13 +32,12 @@ def availability(request, bu_id):
 			availability.append(temp)
 
 		availability = json.dumps(availability)
-		print(availability)
 		return JsonResponse({'availability': availability})
 
 	if request.method == 'POST':
 		old_availability = user.available_set.all()
 		new_availability = json.loads(request.POST.get('availability'))
-		print(new_availability)
+		timezone = json.loads(request.POST.get('timezone'))
 		available_instances = []
 		for time_range in new_availability:
 			avail = Available(
@@ -48,8 +47,10 @@ def availability(request, bu_id):
 						baseuser=user
 					)
 			available_instances.append(avail)
-		print(available_instances)
 		old_availability.delete()
 		Available.objects.bulk_create(available_instances)
+		if timezone != user.timezone:
+			user.timezone = timezone
+			user.save()		
 		context = {'message': 'success'}
 		return JsonResponse({'message':'Availability Updated'})
