@@ -6,12 +6,6 @@ from django.http import JsonResponse
 from interviews.models import Available
 from accounts.models import BaseUser
 
-# {'3': [{'end': '05:30', 'start': '00:00'}, {'end': '21:30', 'start': '15:00'}], 
-# '1': [{'end': '18:00', 'start': '17:00'}], '0': [{'end': '21:00', 'start': '15:00'}],
-#  '2': [{'end': '23:59', 'start': '23:00'}]}
-
-# ad:  {'2': [{'start': '23:00', 'end': '23:59'}], '3': [{'start': '00:00', 'end': '05:30'}, {'start': '15:00', 'end': '21:30'}], '1': [{'start': '17:00', 'end': '18:00'}], '0': [{'start': '15:00', 'end': '21:00'}]}
-
 def available(request, bu_id):
 	user = BaseUser.objects.get(id=bu_id)
 	context = {'user': user}
