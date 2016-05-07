@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_countries',
     'bootstrap3',
+    'storages',
     # Project apps
     'accounts',
     'jobs',
@@ -126,8 +127,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+# STATIC_URL = '/static/'
+# MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static", "media")
 
@@ -140,3 +141,21 @@ STATICFILES_DIRS = (
 PHONENUMBER_DB_FORMAT = 'E164'
 
 AUTH_USER_MODEL = 'accounts.BaseUser'
+
+# Amazon S3 configuration
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_HEADERS = {
+    'Expires': 'Thu, 31 Jan 2030 20:00:00 UTC',
+    'Cache-Control': 'max-age=94608000',
+}
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = 'recruit.custom_storages.StaticStorage'
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+
+MEDIAFILES_LOCATION = 'media'
+MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+DEFAULT_FILE_STORAGE = 'recruit.custom_storages.MediaStorage'
