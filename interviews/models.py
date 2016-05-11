@@ -1,6 +1,6 @@
 import shortuuid
 from django.db import models
-from accounts.models import BaseUser
+from django.contrib.auth.models import User
 
 STATUS_CHOICES = (
 	(-3, 'Revoked'),
@@ -17,8 +17,8 @@ class InterviewRequest(models.Model):
 		max_length=5,
 		default=shortuuid.ShortUUID().random(length=5).upper(),
 		)
-	party_a = models.OneToOneField(BaseUser, related_name='party_a') 
-	party_b = models.OneToOneField(BaseUser, related_name='party_b')
+	party_a = models.OneToOneField(User, related_name='party_a') 
+	party_b = models.OneToOneField(User, related_name='party_b')
 	confirmed_time = models.DateTimeField(null=True, blank=True)
 	status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 	request_reminders_sent = models.IntegerField(default=0)
@@ -33,7 +33,7 @@ class Available(models.Model):
 	day_of_week = models.IntegerField()
 	time_start = models.CharField(max_length=5)
 	time_end = models.CharField(max_length=5)
-	baseuser = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)	
 
@@ -43,4 +43,4 @@ class Available(models.Model):
 
 class Exclusion(models.Model):
 	date = models.DateField()
-	baseuser = models.OneToOneField(BaseUser)
+	user = models.OneToOneField(User)
