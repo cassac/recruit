@@ -23,6 +23,14 @@ class UserCreationForm(forms.ModelForm):
 			raise ValidationError('Email already registered')
 		return cleaned_data
 
+	def save(self, commit=True):
+		user = super(UserCreationForm, self).save(commit=False)
+		user.username = self.cleaned_data['email']
+		if commit:
+			user.save()
+		return user
+
+
 class UserChangeForm(forms.ModelForm):
 	password = ReadOnlyPasswordHashField()
 
@@ -40,7 +48,7 @@ class UserAdmin(BaseUserAdmin):
 	list_display = ('email','is_staff')
 	list_filter = ('is_staff',)
 	fieldsets = (
-		(None, {'fields': ('email', 'password')}),
+		(None, {'fields': ('email', 'password', 'username')}),
 		('Permissions', {'fields': ('is_staff',)}),
 	)
 	add_fieldsets = (
