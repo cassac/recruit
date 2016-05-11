@@ -1,13 +1,13 @@
 from django.contrib import admin
 
-from .models import Job, JobPreferences
+from .models import Job, JobRequirements
 
-class JobPreferencesInline(admin.StackedInline):
-	model = JobPreferences
+class JobRequirementsInline(admin.StackedInline):
+	model = JobRequirements
 	can_delete = False
 	verbose_name_plural = 'Preferences'
 
 class JobAdmin(admin.ModelAdmin):
-	inlines = (JobPreferencesInline,)
+	inlines = (JobRequirementsInline,)
 
 admin.site.register(Job, JobAdmin)
