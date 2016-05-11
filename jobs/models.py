@@ -1,13 +1,22 @@
 from django.db import models
 
-from accounts.models import Company, Recruiter, Gender, Country
+from accounts.models import Employer, Recruiter
+from accounts.choices import COUNTRY_CHOICES
+
+
+class Country(models.Model):
+	country = models.CharField(
+		max_length=100,
+		choices=COUNTRY_CHOICES,
+	)
+
+	def __str__(self):
+		return self.country
 
 class Job(models.Model):
-	company = models.OneToOneField(
-		Company,
-		on_delete=models.CASCADE,
-	)
+	company = models.OneToOneField(Employer, on_delete=models.CASCADE)
 	title = models.CharField(max_length=100)
+	location = models.CharField(choices=(('onsite', 'On-site'), ('remote', 'Remote'),), max_length=50, blank=True, null=True)
 	weekly_hours = models.IntegerField()
 	salary_high = models.IntegerField()
 	salary_low = models.IntegerField()
@@ -31,17 +40,14 @@ class Job(models.Model):
 	compensation_terms = models.CharField(max_length=250)
 	is_featured = models.NullBooleanField()
 	is_promoting = models.NullBooleanField()
-	recruiter = models.ManyToManyField(Recruiter, blank=True)
+	recruiter = models.OneToOneField(Recruiter, blank=True)
 
 	def __str__(self):
 		return self.title
 
-class JobPreferences(models.Model):
-	job = models.OneToOneField(
-		Job,
-		on_delete=models.CASCADE,
-	)
+class JobRequirements(models.Model):
+	job = models.OneToOneField(Job, on_delete=models.CASCADE)
 	age_high = models.IntegerField()
 	age_low = models.IntegerField()
-	gender = models.ManyToManyField(Gender, blank=True) 	
+	gender = models.CharField(choices=(('male', 'Male'), ('female', 'Female'),), max_length=10, blank=True, null=True)
 	citizenship = models.ManyToManyField(Country, blank=True)		
