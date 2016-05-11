@@ -26,8 +26,8 @@ class Job(models.Model):
 	insurance_included = models.BooleanField()
 	insurance_stipend = models.CharField(max_length=100)
 	contract_length = models.IntegerField()
-	contract_renew_bonus = models.IntegerField(blank=True)
-	contract_completion_bonus = models.IntegerField(blank=True)
+	contract_renew_bonus = models.IntegerField(blank=True, null=True)
+	contract_completion_bonus = models.IntegerField(blank=True, null=True)
 	compensation_type = models.CharField(
 		max_length=25, 
 		blank=False,
@@ -40,7 +40,7 @@ class Job(models.Model):
 	compensation_terms = models.CharField(max_length=250)
 	is_featured = models.NullBooleanField()
 	is_promoting = models.NullBooleanField()
-	recruiter = models.OneToOneField(Recruiter, blank=True)
+	recruiter = models.OneToOneField(Recruiter)
 
 	def __str__(self):
 		return self.title
