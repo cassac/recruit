@@ -140,8 +140,6 @@ STATICFILES_DIRS = (
 
 PHONENUMBER_DB_FORMAT = 'E164'
 
-AUTH_USER_MODEL = 'accounts.BaseUser'
-
 # Amazon S3 configuration
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
