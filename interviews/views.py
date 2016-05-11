@@ -2,17 +2,18 @@ import json
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 from interviews.models import Available
-from accounts.models import BaseUser
+
 
 def available(request, bu_id):
-	user = BaseUser.objects.get(id=bu_id)
+	user = User.objects.get(id=bu_id)
 	context = {'user': user}
 	return render(request, 'interviews/available.html', context)
 
 def availability(request, bu_id):
-	user = BaseUser.objects.get(id=bu_id)
+	user = User.objects.get(id=bu_id)
 	if request.method == 'GET':
 		user_availabiity = user.available_set.all()
 		availability = []
@@ -36,7 +37,7 @@ def availability(request, bu_id):
 						day_of_week=int(time_range['day']), 
 						time_start=time_range['start'], 
 						time_end=time_range['end'],
-						baseuser=user
+						User=user
 					)
 			available_instances.append(avail)
 		old_availability.delete()
