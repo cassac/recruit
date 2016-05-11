@@ -1,11 +1,12 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import (BaseUser, Candidate, CandidatePreferences, Recruiter, 
-	Company, CompanyPreferences)
+from .models import (Candidate, CandidateRequirements, Recruiter, Employer, 
+	EmployerRequirements)
 
 class UserCreationForm(forms.ModelForm):
 	password1 = forms.CharField(label='Password',
@@ -14,7 +15,7 @@ class UserCreationForm(forms.ModelForm):
 		widget=forms.PasswordInput)
 
 	class Meta:
-		model = BaseUser
+		model = User
 		fields = ('email',)
 
 	def clean_password2(self):
@@ -37,8 +38,8 @@ class UserChangeForm(forms.ModelForm):
 	password = ReadOnlyPasswordHashField()
 
 	class Meta:
-		model = BaseUser
-		fields = ('email', 'password', 'is_active', 'is_admin')
+		model = User
+		fields = ('email', 'password', 'is_active', 'is_staff')
 
 	def clean_password(self):
 		return self.initial['password']
@@ -47,11 +48,11 @@ class UserAdmin(BaseUserAdmin):
 	form = UserChangeForm
 	add_form = UserCreationForm
 
-	list_display = ('email','is_admin')
-	list_filter = ('is_admin',)
+	list_display = ('email','is_staff')
+	list_filter = ('is_staff',)
 	fieldsets = (
 		(None, {'fields': ('email', 'password')}),
-		('Permissions', {'fields': ('is_admin',)}),
+		('Permissions', {'fields': ('is_staff',)}),
 	)
 	add_fieldsets = (
 		(None, {
@@ -63,33 +64,34 @@ class UserAdmin(BaseUserAdmin):
 	ordering = ('email',)
 	filter_horizontal = ()
 
-admin.site.register(BaseUser, UserAdmin)
-admin.site.unregister(Group)
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
-class CandidatePreferencesInline(admin.StackedInline):
-	model = CandidatePreferences
+
+class CandidateRequirementsInline(admin.StackedInline):
+	model = CandidateRequirements
 	can_delete = False
-	verbose_name_plural = 'Preferences'
+
 
 class CandidateAdmin(admin.ModelAdmin):
-	inlines = (CandidatePreferencesInline,)
+	# inlines = (CandidateRequirementsInline,)
 	exclude = ('password', 'last_login', 'is_admin',)
 
 admin.site.register(Candidate, CandidateAdmin)
 
 
 class RecruiterAdmin(admin.ModelAdmin):
-	exclude = ('password', 'last_login', 'is_admin',)
+	exclude = ('password', 'last_login', 'is_staff',)
 
 admin.site.register(Recruiter, RecruiterAdmin)
 
-class CompanyPreferencesInline(admin.StackedInline):
-	model = Company
+class EmployerRequirementsInline(admin.StackedInline):
+	model = Employer
 	can_delete = False
 	verbose_name_plural = 'Preferences'
 
-class CompanyAdmin(admin.ModelAdmin):
-	inlines = (CompanyPreferencesInline,)
-	exclude = ('password', 'last_login', 'is_admin',)
+class EmployerAdmin(admin.ModelAdmin):
+	# inlines = (EmployerRequirementsInline,)
+	exclude = ('password', 'last_login', 'is_staff',)
 
-admin.site.register(Company, CompanyAdmin)
+admin.site.register(Employer, EmployerAdmin)
