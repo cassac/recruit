@@ -23,6 +23,9 @@ class Profile(models.Model):
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
+	def __str__(self):
+		return self.user.email
+
 class Candidate(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	birth_year = models.CharField(max_length=4, blank=False)
@@ -35,6 +38,9 @@ class Candidate(models.Model):
 		)	
 	education_major = models.CharField(max_length=250, blank=True)
 	current_location = CountryField(blank=True)
+
+	def __str__(self):
+		return self.user.email
 
 class CandidateRequirements(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -54,6 +60,9 @@ class Employer(models.Model):
 	address_english = models.CharField(blank=False, max_length=200)
 	address_local = models.CharField(blank=False, max_length=200)
 	business_license = models.ImageField(upload_to='employer/%Y/%m/%d')
+
+	def __str__(self):
+		return self.user.email
 
 class EmployerRequirements(models.Model):
 	employer = models.OneToOneField(Employer, on_delete=models.CASCADE)
