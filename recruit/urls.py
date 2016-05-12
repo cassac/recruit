@@ -19,9 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from interviews import views as interviewsViews
+from jobs import views as jobsViews
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^jobs/', jobsViews.view_jobs, name='view_jobs'),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
     url(r'^available/(?P<bu_id>[0-9])/$', interviewsViews.available, name='available'),
     url(r'^availability/(?P<bu_id>[0-9])/$', interviewsViews.availability, name='availability'),
