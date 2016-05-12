@@ -62,7 +62,7 @@ class Employer(models.Model):
 	business_license = models.ImageField(upload_to='employer/%Y/%m/%d')
 
 	def __str__(self):
-		return self.user.email
+		return self.name_english
 
 class EmployerRequirements(models.Model):
 	employer = models.OneToOneField(Employer, on_delete=models.CASCADE)
