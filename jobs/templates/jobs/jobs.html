@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ block.super }}
+ - Jobs
+{% endblock title %}
+
+{% block head %}
+<meta name="csrf-token" content="{{csrf_token}}">
+{% endblock head %}
+
+{% block content %}
+
+<h1>Jobs</h1>
+<div class='row'>
+	{% for job in jobs %}
+		<div class='col-xs-6 col-md-3'>
+			<div class="well">
+				<h3>{{ job.title }}</h3>
+				<span>{{ job.employer }}</span>
+			    <a href="#" class="thumbnail">
+			      <img src="{{ job.employer.business_license.url }}">
+			    </a>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+
+{% endblock content %}
+
+
