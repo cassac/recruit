@@ -1,7 +1,8 @@
 from django.db import models
 
-from accounts.models import Employer, Recruiter
-from accounts.choices import COUNTRY_CHOICES
+from accounts.models import Recruiter
+from employers.models import Employer
+from recruit.choices import COUNTRY_CHOICES
 
 
 class Country(models.Model):
