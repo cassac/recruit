@@ -6,8 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import (Candidate, CandidateRequirements, Recruiter, Employer, 
-	EmployerRequirements)
+from .models import (Candidate, CandidateRequirements, Recruiter)
 
 class UserCreationForm(forms.ModelForm):
 
@@ -81,14 +80,3 @@ class RecruiterAdmin(admin.ModelAdmin):
 	exclude = ('password', 'last_login', 'is_staff',)
 
 admin.site.register(Recruiter, RecruiterAdmin)
-
-class EmployerRequirementsInline(admin.StackedInline):
-	model = Employer
-	can_delete = False
-	verbose_name_plural = 'Preferences'
-
-class EmployerAdmin(admin.ModelAdmin):
-	# inlines = (EmployerRequirementsInline,)
-	exclude = ('password', 'last_login', 'is_staff',)
-
-admin.site.register(Employer, EmployerAdmin)
