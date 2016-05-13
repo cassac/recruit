@@ -67,15 +67,8 @@ class Employer(models.Model):
 
 	def save(self, *args, **kwargs):
 		from .utils import generate_thumbnail
-		thumb,filename=generate_thumbnail(self.business_license)
-		# print(thumb.filename, thumb.size)
-		# print(dir(thumb))
-		# print(thumb)
-		# print(dir(self.business_license_thumb))
+		thumb = generate_thumbnail(self.business_license)
 		self.business_license_thumb=thumb
-
-		
-
 		super(Employer, self).save(*args, **kwargs)
 
 class EmployerRequirements(models.Model):
@@ -99,31 +92,4 @@ class Recruiter(models.Model):
 	id_card = models.ImageField(upload_to='recruiter/%Y/%m/%d')
 
 	def __str__(self):
-		return self.user.email
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-def thumbnail(file):
-	print('file: ', file)
-	size = 75, 75
-	im = Image.open(file)
-	# filename, ext = file.filename.split('.')
-	# filename = filename + '-thumb.' + ext
-	im.thumbnail(size)
-	return im
-	# memory_file = cStringIO.StringIO()
-	# im.save(memory_file, ext)
-	# return memory_file, filename
-
-@receiver(post_save, sender=Employer)
-def my_callback(sender, instance, **kwargs):
-	print('sender: ', sender)
-	# employer = Employer.objects.get(pk=instance.pk)
-	# thumb = thumbnail(instance.business_license)
-	# # print('request finished', thumb)
-	# employer.business_license_thumb = thumb
-	# employer.save()
-	# return employer
-
-post_save.connect(my_callback, sender=Employer)		
+		return self.user.email	
