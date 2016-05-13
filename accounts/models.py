@@ -71,6 +71,12 @@ class Employer(models.Model):
 		self.business_license_thumb=thumb
 		super(Employer, self).save(*args, **kwargs)
 
+	def delete(self, *args, **kwargs):
+		from .utils import delete_from_s3
+		delete_from_s3(self.business_license)
+		delete_from_s3(self.business_license_thumb)
+		super(Employer, self).delete(*args, **kwargs)
+
 class EmployerRequirements(models.Model):
 	employer = models.OneToOneField(Employer, on_delete=models.CASCADE)
 	education = models.CharField(
