@@ -14,3 +14,7 @@ def generate_thumbnail(file):
 	im.save(memory_file, ext)
 	suf = SimpleUploadedFile(filename, memory_file.getvalue(), content_type=mime[0])
 	return suf
+
+def delete_from_s3(instance):
+	instance.storage.delete(name=instance.name)
+	return instance
