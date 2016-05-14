@@ -30,6 +30,10 @@ class Employer(models.Model):
 		from recruit.utils import delete_from_s3
 		delete_from_s3(self.business_license)
 		delete_from_s3(self.business_license_thumb)
+		if self.images.count() > 0:
+			for image in self.images.all():
+				delete_from_s3(image.image)
+				delete_from_s3(image.thumb)
 		super(Employer, self).delete(*args, **kwargs)
 
 class EmployerRequirements(models.Model):
@@ -44,3 +48,24 @@ class EmployerRequirements(models.Model):
 	age_range_high = models.IntegerField(blank=True)
 	years_of_experience = models.IntegerField(blank=True)
 	citizenship = CountryField(blank=True)
+
+class EmployerImages(models.Model):
+	employer = models.ForeignKey(Employer, on_delete=models.CASCADE, related_name='images')
+	cover_image = models.BooleanField(default=False)
+	is_active = models.BooleanField(default=True)
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
+	image = models.ImageField(upload_to='employer/%Y/%m/%d')
+	thumb = models.ImageField(upload_to='employer/%Y/%m/%d', blank=True)
+
+	def save(self, *args, **kwargs):
+		from recruit.utils import generate_thumbnail
+		thumb = generate_thumbnail(self.image)
+		self.thumb=thumb
+		super(EmployerImages, self).save(*args, **kwargs)
+
+	def delete(self, *args, **kwargs):
+		from recruit.utils import delete_from_s3
+		delete_from_s3(self.image)
+		delete_from_s3(self.thumb)
+		super(EmployerImages, self).delete(*args, **kwargs)	
