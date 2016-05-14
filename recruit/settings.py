@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'employers',
     'jobs',
     'interviews',
+    'recruiters',
 ]
 
 MIDDLEWARE_CLASSES = [
