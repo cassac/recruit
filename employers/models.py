@@ -28,12 +28,11 @@ class Employer(models.Model):
 
 	def delete(self, *args, **kwargs):
 		from recruit.utils import delete_from_s3
-		delete_from_s3(self.business_license)
-		delete_from_s3(self.business_license_thumb)
+		instances_list = [self.business_license, self.business_license_thumb]
 		if self.images.count() > 0:
 			for image in self.images.all():
-				delete_from_s3(image.image)
-				delete_from_s3(image.thumb)
+				instances_list.extend([image.image, image.thumb])
+		delete_from_s3(instances_list)
 		super(Employer, self).delete(*args, **kwargs)
 
 class EmployerRequirements(models.Model):
