@@ -6,10 +6,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import (Candidate, CandidateRequirements, Recruiter)
+from .models import Candidate, CandidateRequirements
 
 class UserCreationForm(forms.ModelForm):
-
 
 	class Meta:
 		model = User
@@ -74,9 +73,3 @@ class CandidateAdmin(admin.ModelAdmin):
 	exclude = ('password', 'last_login', 'is_admin',)
 
 admin.site.register(Candidate, CandidateAdmin)
-
-
-class RecruiterAdmin(admin.ModelAdmin):
-	exclude = ('password', 'last_login', 'is_staff',)
-
-admin.site.register(Recruiter, RecruiterAdmin)

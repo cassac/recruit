@@ -50,13 +50,3 @@ class CandidateRequirements(models.Model):
 			blank=True,
 			choices=EMPLOYER_TYPE_CHOICES,
 		)
-
-class Recruiter(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	phone_number = PhoneNumberField(blank=False)
-	date_of_birth = models.DateField(blank=True, null=True)
-	location = models.CharField(blank=True, max_length=100)
-	id_card = models.ImageField(upload_to='recruiter/%Y/%m/%d')
-
-	def __str__(self):
-		return self.user.email	
