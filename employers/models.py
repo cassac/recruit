@@ -65,6 +65,5 @@ class EmployerImages(models.Model):
 
 	def delete(self, *args, **kwargs):
 		from recruit.utils import delete_from_s3
-		delete_from_s3(self.image)
-		delete_from_s3(self.thumb)
+		delete_from_s3([self.image, self.thumb])
 		super(EmployerImages, self).delete(*args, **kwargs)	
