@@ -22,8 +22,7 @@ class Employer(models.Model):
 
 	def save(self, *args, **kwargs):
 		from recruit.utils import generate_thumbnail
-		thumb = generate_thumbnail(self.business_license)
-		self.business_license_thumb=thumb
+		self.business_license_thumb = generate_thumbnail(self.business_license)
 		super(Employer, self).save(*args, **kwargs)
 
 	def delete(self, *args, **kwargs):
@@ -59,8 +58,7 @@ class EmployerImages(models.Model):
 
 	def save(self, *args, **kwargs):
 		from recruit.utils import generate_thumbnail
-		thumb = generate_thumbnail(self.image)
-		self.thumb=thumb
+		self.thumb = generate_thumbnail(self.image)
 		super(EmployerImages, self).save(*args, **kwargs)
 
 	def delete(self, *args, **kwargs):

@@ -15,8 +15,7 @@ class Recruiter(models.Model):
 
 	def save(self, *args, **kwargs):
 		from recruit.utils import generate_thumbnail
-		thumb = generate_thumbnail(self.image)
-		self.thumb=thumb
+		self.thumb = generate_thumbnail(self.image)
 		super(Recruiter, self).save(*args, **kwargs)
 
 	def delete(self, *args, **kwargs):
