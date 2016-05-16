@@ -12,7 +12,7 @@ from recruit.choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 	EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES, POSITION_TYPE_CHOICES, 
 	DESIRED_MONTHLY_SALARY_CHOICES)
 
-class Profile(models.Model):
+class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	timezone = models.CharField(choices=TIMEZONE_CHOICES, max_length=50, blank=True)
 	citizenship = models.CharField(max_length=50, blank=True)
@@ -28,6 +28,6 @@ class Profile(models.Model):
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        UserProfile.objects.create(user=instance)
 
 post_save.connect(create_user_profile, sender=User)
