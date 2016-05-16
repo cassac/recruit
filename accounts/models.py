@@ -6,6 +6,8 @@ from django.utils import timezone
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 
+from jobs.models import Job
+
 from recruit.choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 	EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES, POSITION_TYPE_CHOICES, 
 	DESIRED_MONTHLY_SALARY_CHOICES)
@@ -38,6 +40,7 @@ class Candidate(models.Model):
 		)	
 	education_major = models.CharField(max_length=250, blank=True)
 	current_location = CountryField(blank=True)
+	applied_jobs = models.ManyToManyField(Job, blank=True)
 
 	def __str__(self):
 		return self.user.email
