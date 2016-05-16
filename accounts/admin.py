@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import Candidate, CandidateRequirements
+from .models import Candidate, CandidateRequirements, CandidateDocument
 
 class UserCreationForm(forms.ModelForm):
 
@@ -67,9 +67,13 @@ class CandidateRequirementsInline(admin.StackedInline):
 	model = CandidateRequirements
 	can_delete = False
 
+class CandidateDocument(admin.StackedInline):
+	model = CandidateDocument
+	can_delete = True
 
 class CandidateAdmin(admin.ModelAdmin):
 	# inlines = (CandidateRequirementsInline,)
-	exclude = ('password', 'last_login', 'is_admin',)
+	inlines = (CandidateDocument,)
+	exclude = ('password', 'last_login', 'is_admin', 'thumb')
 
 admin.site.register(Candidate, CandidateAdmin)
