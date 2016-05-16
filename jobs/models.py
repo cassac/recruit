@@ -44,7 +44,7 @@ class Job(models.Model):
 	recruiter = models.ForeignKey(Recruiter)
 
 	def __str__(self):
-		return self.title
+		return "%d) %s: %s" % (self.pk, self.employer.name_english, self.title)
 
 class JobRequirements(models.Model):
 	job = models.OneToOneField(Job, on_delete=models.CASCADE)
