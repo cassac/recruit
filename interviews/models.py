@@ -30,10 +30,10 @@ class InterviewRequest(models.Model):
 		return '<Interview: A: %s, B: %s>' % (self.party_a, self.party_b)
 
 class Available(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)	
 	day_of_week = models.IntegerField()
 	time_start = models.CharField(max_length=5)
 	time_end = models.CharField(max_length=5)
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)	
 
@@ -42,5 +42,5 @@ class Available(models.Model):
 
 
 class Exclusion(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)	
 	date = models.DateField()
-	user = models.OneToOneField(User)
