@@ -10,6 +10,9 @@ class Recruiter(models.Model):
 	location = models.CharField(max_length=100)
 	image = models.ImageField(upload_to='recruiter/%Y/%m/%d')
 	thumb = models.ImageField(upload_to='recruiter/%Y/%m/%d', blank=True)
+	is_active = models.BooleanField(default=True)
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 	def __str__(self):
 		return self.user.email

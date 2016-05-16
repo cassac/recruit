@@ -17,6 +17,9 @@ class Employer(models.Model):
 	address_local = models.CharField(blank=False, max_length=200)
 	business_license = models.ImageField(upload_to='employer/%Y/%m/%d')
 	business_license_thumb = models.ImageField(upload_to='employer/%Y/%m/%d', blank=True)
+	is_active = models.BooleanField(default=True)
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 	def __str__(self):
 		return self.name_english

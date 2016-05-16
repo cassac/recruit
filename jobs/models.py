@@ -39,9 +39,11 @@ class Job(models.Model):
 	)	
 	compensation_amount = models.CharField(max_length=25, blank=False)
 	compensation_terms = models.CharField(max_length=250)
-	is_featured = models.NullBooleanField()
-	is_promoting = models.NullBooleanField()
+	is_featured = models.BooleanField(default=False)
+	is_active = models.BooleanField(default=True)
 	recruiter = models.ForeignKey(Recruiter)
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 	def __str__(self):
 		return "%d) %s: %s" % (self.pk, self.employer.name_english, self.title)

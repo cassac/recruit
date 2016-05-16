@@ -21,6 +21,9 @@ class Candidate(models.Model):
 	applied_jobs = models.ManyToManyField(Job, blank=True)
 	image = models.ImageField(upload_to='employer/%Y/%m/%d')
 	thumb = models.ImageField(upload_to='employer/%Y/%m/%d', blank=True)
+	is_active = models.BooleanField(default=True)
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 	def save(self, *args, **kwargs):
 		from recruit.utils import generate_thumbnail
