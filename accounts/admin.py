@@ -11,7 +11,7 @@ class UserCreationForm(forms.ModelForm):
 
 	class Meta:
 		model = User
-		fields = ('email', 'username')
+		fields = ('email', 'username',)
 
 	def clean(self):
 		super(UserCreationForm, self).clean()
@@ -45,13 +45,13 @@ class UserAdmin(BaseUserAdmin):
 	list_display = ('email','is_staff')
 	list_filter = ('is_staff',)
 	fieldsets = (
-		(None, {'fields': ('email', 'password', 'username')}),
+		(None, {'fields': ('email', 'password', 'username',)}),
 		('Permissions', {'fields': ('is_staff',)}),
 	)
 	add_fieldsets = (
 		(None, {
 		'classes': ('wide',),
-		'fields': ('email','username')}
+		'fields': ('email','username', 'first_name', 'last_name',)}
 		),
 	)
 	search_fields = ('email',)
