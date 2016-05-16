@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
 from django_countries.fields import CountryField
 
+from accounts.models import UserProfile
 from jobs.models import Job
 from recruit.choices import (EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES)
 
@@ -36,6 +37,12 @@ class Candidate(models.Model):
 	def __str__(self):
 		return self.user.email
 
+def update_user_profile(sender, instance, created, **kwargs):
+	if created:
+		UserProfile.objects.filter(user=instance.user).update(user_type='Candidate')
+
+post_save.connect(update_user_profile, sender=Candidate)		
+
 class CandidateRequirements(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	# location = models.ManyToManyField(Location, on_delete=models.CASCADE)  create m2m
@@ -56,4 +63,4 @@ class CandidateDocument(models.Model):
 	def delete(self, *args, **kwargs):
 		from recruit.utils import delete_from_s3
 		delete_from_s3([self.document])
-		super(CandidateDocument, self).delete(*args, **kwargs)	
+		super(CandidateDocument, self).delete(*args, **kwargs)
