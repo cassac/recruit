@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django_countries.fields import CountryField
 
-from accounts.models import UserProfile
 from jobs.models import Job
 from recruit.choices import (EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES)
 
@@ -38,6 +37,7 @@ class Candidate(models.Model):
 		return self.user.email
 
 def update_user_profile(sender, instance, created, **kwargs):
+	from accounts.models import UserProfile
 	if created:
 		UserProfile.objects.filter(user=instance.user).update(user_type='Candidate')
 

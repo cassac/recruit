@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
-from accounts.models import UserProfile
+
 from recruit.choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 	EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES, POSITION_TYPE_CHOICES, 
 	DESIRED_MONTHLY_SALARY_CHOICES)
@@ -36,8 +36,11 @@ class Employer(models.Model):
 		super(Employer, self).delete(*args, **kwargs)
 
 def update_user_profile(sender, instance, created, **kwargs):
+	from accounts.models import UserProfile
 	if created:
 		UserProfile.objects.filter(user=instance.user).update(user_type='Employer')
+
+post_save.connect(update_user_profile, sender=Employer)
 
 class EmployerRequirements(models.Model):
 	employer = models.OneToOneField(Employer, on_delete=models.CASCADE)

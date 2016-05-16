@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models.signals import post_save
-from accounts.models import UserProfile
 
 class Recruiter(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -26,5 +25,8 @@ class Recruiter(models.Model):
 		super(Recruiter, self).delete(*args, **kwargs)
 
 def update_user_profile(sender, instance, created, **kwargs):
+	from accounts.models import UserProfile
 	if created:
 		UserProfile.objects.filter(user=instance.user).update(user_type='Recruiter')
+
+post_save.connect(update_user_profile, sender=Recruiter)
