@@ -18,7 +18,7 @@ class Candidate(models.Model):
 		)	
 	education_major = models.CharField(max_length=250, blank=True)
 	current_location = CountryField(blank=True)
-	applied_jobs = models.ManyToManyField(Job, blank=True)
+	requested_jobs = models.ManyToManyField(Job, blank=True, through='RequestedJob')
 	image = models.ImageField(upload_to='employer/%Y/%m/%d')
 	thumb = models.ImageField(upload_to='employer/%Y/%m/%d', blank=True)
 	is_active = models.BooleanField(default=True)
@@ -45,6 +45,11 @@ def update_user_profile(sender, instance, created, **kwargs):
 		UserProfile.objects.filter(user=instance.user).update(user_type='Candidate')
 
 post_save.connect(update_user_profile, sender=Candidate)		
+
+class RequestedJob(models.Model):
+	candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+	job = models.ForeignKey(Job, on_delete=models.CASCADE)
+	updated = models.DateTimeField(auto_now=True)
 
 class CandidateRequirements(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
