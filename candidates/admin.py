@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from .models import CandidateRequirements, CandidateDocument, Candidate, RequestedJob
+from .models import CandidateRequirements, CandidateDocument, Candidate
+from interviews.models import InterviewRequest
 
-class RequestedJobInline(admin.StackedInline):
-	model = RequestedJob
+class InterviewRequestInline(admin.StackedInline):
+	model = InterviewRequest
 
 class CandidateRequirementsInline(admin.StackedInline):
 	model = CandidateRequirements
@@ -13,7 +14,7 @@ class CandidateDocument(admin.StackedInline):
 
 class CandidateAdmin(admin.ModelAdmin):
 	# inlines = (CandidateRequirementsInline,)
-	inlines = (CandidateDocument, RequestedJobInline)
+	inlines = (CandidateDocument, InterviewRequestInline)
 	exclude = ('password', 'last_login', 'is_admin', 'thumb')
 
 admin.site.register(Candidate, CandidateAdmin)
