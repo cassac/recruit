@@ -1,33 +1,58 @@
 import shortuuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+
+from candidates.models import Candidate
+from jobs.models import Job
 
 STATUS_CHOICES = (
 	(-3, 'Revoked'),
-	(-2, 'Party A Cancelled'),
-	(-1, 'Party B Cancelled'),
+	(-2, 'Candidate Cancelled'),
+	(-1, 'Employer Cancelled'),
 	(0, 'Request Open'),
 	(1, 'Pending Confirmation'),
 	(2, 'Confirmed'),
 	(3, 'Completed'),
 )
 
-class InterviewRequest(models.Model):
+class InterviewInvitation(models.Model):
 	uuid = models.CharField(primary_key=True, 
 		max_length=5,
 		default=shortuuid.ShortUUID().random(length=5).upper(),
 		)
-	party_a = models.OneToOneField(User, related_name='party_a') 
-	party_b = models.OneToOneField(User, related_name='party_b')
+	candidate = models.ForeignKey(Candidate)
+	job = models.ForeignKey(Job)
 	confirmed_time = models.DateTimeField(null=True, blank=True)
 	status = models.IntegerField(choices=STATUS_CHOICES, default=0)
 	request_reminders_sent = models.IntegerField(default=0)
+	confirmation_reminders_sent = models.IntegerField(default=0)
 	is_active = models.BooleanField(default=1)
+	result = models.CharField(max_length=50, blank=True)
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
 	created = models.DateTimeField(auto_now_add=True, auto_now=False)
 
 	def __str__(self):
-		return '<Interview: A: %s, B: %s>' % (self.party_a, self.party_b)
+		return '<Interview C: %s B: %s>' % (self.candidate.user.email, self.job.title)
+
+class InterviewRequest(models.Model):
+	candidate = models.ForeignKey(Candidate)
+	job = models.ForeignKey(Job)
+	candidate_accepted = models.NullBooleanField()
+	employer_accepted = models.NullBooleanField()
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+def generate_invitation(sender, instance, created, **kwargs):
+	if instance.candidate_accepted and instance.employer_accepted:
+		print(dir(sender))
+		print(sender.candidate)
+		InterviewInvitation.objects.create(
+			candidate=instance.candidate,
+			job=instance.job
+		)
+
+post_save.connect(generate_invitation, sender=InterviewRequest)	
 
 class Available(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)	
