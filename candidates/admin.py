@@ -35,6 +35,8 @@ class CandidateAdmin(admin.ModelAdmin):
 	list_display = (email, name, citizenship, date_of_birth, 'gender')	
 	inlines = (CandidateDocument, InterviewRequestInline)
 	exclude = ('password', 'last_login', 'is_admin', 'thumb')
+	search_fields = ('date_of_birth', 'birth_year', 'user__email', 
+		'user__first_name', 'user__last_name', 'user__userprofile__citizenship',)
 
 admin.site.register(Candidate, CandidateAdmin)
 
