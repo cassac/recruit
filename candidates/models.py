@@ -48,8 +48,13 @@ post_save.connect(update_user_profile, sender=Candidate)
 
 class RequestedJob(models.Model):
 	candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-	job = models.ForeignKey(Job, on_delete=models.CASCADE)
+	job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='candidates')
+	approved = models.NullBooleanField()
 	updated = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return "%s - %s: %s" % (self.candidate.user.email, 
+			self.job.title, self.job.employer.name_english)
 
 class CandidateRequirements(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
