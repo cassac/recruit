@@ -1,14 +1,19 @@
 from django.contrib import admin
 
-from .models import InterviewRequest, Available
+from .models import InterviewRequest, InterviewInvitation, Available
 
 class InterviewRequestAdmin(admin.ModelAdmin):
-	readonly_fields = ('uuid',)
-	search_fields = ('uuid', 'party_a', 'party_b')
-	list_display = ('party_a', 'party_b', 'status', 'confirmed_time', 'uuid')	
-	list_filter = ('status', 'confirmed_time',)
+	pass
 
 admin.site.register(InterviewRequest, InterviewRequestAdmin)
+
+class InterviewInvitationAdmin(admin.ModelAdmin):
+	readonly_fields = ('uuid',)
+	search_fields = ('uuid',)
+	list_display = ('status', 'confirmed_time', 'uuid')	
+	list_filter = ('status', 'confirmed_time',)
+
+admin.site.register(InterviewInvitation , InterviewInvitationAdmin)
 
 class AvailableAdmin(admin.ModelAdmin):
 	pass
