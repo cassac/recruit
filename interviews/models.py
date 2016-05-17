@@ -45,8 +45,6 @@ class InterviewRequest(models.Model):
 
 def generate_invitation(sender, instance, created, **kwargs):
 	if instance.candidate_accepted and instance.employer_accepted:
-		print(dir(sender))
-		print(sender.candidate)
 		InterviewInvitation.objects.create(
 			candidate=instance.candidate,
 			job=instance.job
