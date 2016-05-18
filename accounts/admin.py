@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-
+from .models import UserProfile
 
 class UserCreationForm(forms.ModelForm):
 
@@ -38,10 +38,16 @@ class UserChangeForm(forms.ModelForm):
 	def clean_password(self):
 		return self.initial['password']
 
+class UserProfileInline(admin.StackedInline):
+	model = UserProfile
+	max_num = 1
+	can_delete = False
+
 class UserAdmin(BaseUserAdmin):
 	form = UserChangeForm
 	add_form = UserCreationForm
 
+	inlines = (UserProfileInline,)
 	list_display = ('email','is_staff')
 	list_filter = ('is_staff',)
 	fieldsets = (
