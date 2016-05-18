@@ -8,7 +8,6 @@ from recruit.choices import COUNTRY_CHOICES
 class Country(models.Model):
 	country = models.CharField(
 		max_length=100,
-		choices=COUNTRY_CHOICES,
 	)
 
 	def __str__(self):
