@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
+from django_countries.fields import CountryField
 
 from jobs.models import Job
 
@@ -15,7 +16,7 @@ from recruit.choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	timezone = models.CharField(choices=TIMEZONE_CHOICES, max_length=50, blank=True)
-	citizenship = models.CharField(max_length=50, blank=True)
+	citizenship = CountryField()
 	user_type = models.CharField(
 		choices = (('Candidate', 'Candidate'), ('Recruiter', 'Recruiter'), ('Employer', 'Employer'),),
 		max_length = 50,
