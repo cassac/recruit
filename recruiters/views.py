@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from .models import Recruiter
 
-# Create your views here.
+def view_recruiters(request):
+	recruiters = Recruiter.objects.all()
+	context = {'recruiters': recruiters}
+	return render(request, 'recruiters/recruiters.html', context)
