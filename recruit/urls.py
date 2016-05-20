@@ -17,14 +17,18 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import TemplateView
 
 from interviews import views as interviewsViews
 from jobs import views as jobsViews
+from recruiters import views as recruitersViews
 
 urlpatterns = [
+    url(r'^$', TemplateView.as_view(template_name='home.html'), name="home"),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'^jobs/', jobsViews.view_jobs, name='view_jobs'),
+    url(r'^jobs/', jobsViews.view_jobs, name='jobs'),
+    url(r'^recruiters/', recruitersViews.view_recruiters, name='recruiters'),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
     url(r'^available/(?P<bu_id>[0-9])/$', interviewsViews.available, name='available'),
     url(r'^availability/(?P<bu_id>[0-9])/$', interviewsViews.availability, name='availability'),
