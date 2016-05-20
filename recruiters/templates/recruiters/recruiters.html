@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ block.super }}
+ - Welcome
+{% endblock title %}
+
+{% block content %}
+
+<h1>Recruiters</h1>
+<div class='row'>
+	{% for recruiter in recruiters %}
+		<div class='col-xs-6 col-md-3'>
+			<div class="well">
+				<h3>{{ recruiter.user.get_full_name  }}</h3>
+				<span>{{ recruiter.user.email }}</span>
+			    <a href="#" class="thumbnail">
+			      <img src="{{ recruiter.thumb.url }}">
+			    </a>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+
+{% endblock content %}
