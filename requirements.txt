@@ -28,12 +28,16 @@ Pillow==3.2.0
 ptyprocess==0.5.1
 PyJWT==1.4.0
 python-dateutil==2.5.3
+python-http-client==1.2.3
 python-openid==2.2.5
 python3-openid==3.0.10
 pytz==2016.3
 requests==2.9.1
 requests-oauthlib==0.6.1
+sendgrid==2.2.1
+sendgrid-django==2.0.0
 shortuuid==0.4.3
 simplegeneric==0.8.1
 six==1.10.0
+smtpapi==0.3.1
 traitlets==4.2.1
