@@ -30,8 +30,8 @@ urlpatterns = [
     url(r'^jobs/', jobsViews.view_jobs, name='jobs'),
     url(r'^recruiters/', recruitersViews.view_recruiters, name='recruiters'),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
-    url(r'^available/(?P<bu_id>[0-9])/$', interviewsViews.available, name='available'),
-    url(r'^availability/(?P<bu_id>[0-9])/$', interviewsViews.availability, name='availability'),
+    url(r'^available/(?P<bu_id>\d+)/$', interviewsViews.available, name='available'),
+    url(r'^availability/(?P<bu_id>\d+)/$', interviewsViews.availability, name='availability'),
 ]
 
 if settings.DEBUG:
