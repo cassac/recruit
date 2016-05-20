@@ -37,12 +37,15 @@ def availability(request, bu_id):
 						day_of_week=int(time_range['day']), 
 						time_start=time_range['start'], 
 						time_end=time_range['end'],
-						User=user
+						user=user
 					)
 			available_instances.append(avail)
 		old_availability.delete()
 		Available.objects.bulk_create(available_instances)
-		if timezone != user.timezone:
-			user.timezone = timezone
-			user.save()		
-		return JsonResponse({'message':'Availability Updated'})
+		message = {'message': 'Availability updated'}
+		if timezone != user.userprofile.timezone:
+			user.userprofile.timezone = timezone
+			user.userprofile.save()
+			message['message'] = 'Timezone and ' + message['message']	
+		return JsonResponse(message)
+
