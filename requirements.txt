@@ -6,6 +6,8 @@ botocore==1.4.18
 decorator==4.0.9
 defusedxml==0.4.1
 Django==1.9.5
+django-allauth==0.25.2
+django-autofixture==0.12.1
 django-bootstrap3==7.0.1
 django-countries==3.4.1
 django-extensions==1.6.1
