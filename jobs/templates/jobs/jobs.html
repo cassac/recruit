@@ -9,43 +9,49 @@
 <meta name="csrf-token" content="{{csrf_token}}">
 <style>
 .checkBox {
-    float:none;
     display:inline-block;
-    vertical-align:middle;
-    margin-top:40px;
+    margin-top:3em;
 }
-
 </style>
 {% endblock head %}
 
 {% block content %}
 
 <h1>Jobs</h1>
-
-
 <div class='row'>
 	<div class='col-xs-12 col-sm-8'>
-	{% for job in jobs %}
-		<div class="well" id='{{ job.id }}'>
-		
-			<input class='checkBox' type='checkbox' name='requested_jobs[]'>
-
-			<h3>{{ job.title }} <small>{{ job.employer }}</small></h3>
-			<div class='row'>
-				<div class='col-xs-8 col-sm-8'>
-					<ul class="list-inline">
-					  <li>Location: {{ job.location | title }}</li>
-					  <li>Salary: {{ job.salary_low }} - {{ job.salary_high }}</li>
-					  <li>Weekly Hours: {{ job.weekly_hours }}</li>
-					  <li>Posted: {{ job.created | date:"M d"}}</li>
-					</ul>
-				</div>
-				<div class='col-xs-4 col-sm-4 text-center'>
-					<a href="{% url 'job_details' job.id %}" class="btn btn-primary" role="button">Details</a>
+		<form method='post'>
+		{% for job in jobs %}
+			<div class="well" id='{{ job.id }}'>
+				<div class='row'>
+					<div class='col-xs-1 checkBox'>
+						<input type='checkbox' name='requested_jobs[]'>
+					</div>
+					<div class='col-xs-10'>
+						<div class='col-xs-10'>
+							<h3>{{ job.title }} <small>{{ job.employer }}</small></h3>
+						</div>
+						<div class='col-xs-8'>
+							<ul class="list-inline">
+							  <li>Location: {{ job.location | title }}</li>
+							  <li>Salary: {{ job.salary_low }} - {{ job.salary_high }}</li>
+							  <li>Weekly Hours: {{ job.weekly_hours }}</li>
+							  <li>Posted: {{ job.created | date:"M d"}}</li>
+							</ul>
+						</div>
+						<div class='col-xs-4 text-center'>
+							<a href="{% url 'job_details' job.id %}" class="btn btn-primary" role="button">Details</a>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
-	{% endfor %}
+		{% endfor %}
+			<div class="input-group input-group-lg">
+				<span class="input-group-addon glyphicon glyphicon-send" id="addon1"></span>
+				<input type="submit" class="form-control btn btn-primary" value="Submit" aria-describedby="addon1">
+			</div>
+		</form>
+		<br>
 	</div>
 	<div class='col-xs-12 col-sm-4'>
 	    <div class="thumbnail text-center">
