@@ -7,23 +7,56 @@
 
 {% block head %}
 <meta name="csrf-token" content="{{csrf_token}}">
+<style>
+.checkBox {
+    float:none;
+    display:inline-block;
+    vertical-align:middle;
+    margin-top:40px;
+}
+
+</style>
 {% endblock head %}
 
 {% block content %}
 
 <h1>Jobs</h1>
+
+
 <div class='row'>
+	<div class='col-xs-12 col-sm-8'>
 	{% for job in jobs %}
-		<div class='col-xs-6 col-md-3'>
-			<div class="well">
-				<h3>{{ job.title }}</h3>
-				<span>{{ job.employer }}</span>
-			    <a href="#" class="thumbnail">
-			      <img src="{{ job.employer.business_license_thumb.url }}">
-			    </a>
+		<div class="well" id='{{ job.id }}'>
+		
+			<input class='checkBox' type='checkbox' name='requested_jobs[]'>
+
+			<h3>{{ job.title }} <small>{{ job.employer }}</small></h3>
+			<div class='row'>
+				<div class='col-xs-8 col-sm-8'>
+					<ul class="list-inline">
+					  <li>Location: {{ job.location | title }}</li>
+					  <li>Salary: {{ job.salary_low }} - {{ job.salary_high }}</li>
+					  <li>Weekly Hours: {{ job.weekly_hours }}</li>
+					  <li>Posted: {{ job.created | date:"M d"}}</li>
+					</ul>
+				</div>
+				<div class='col-xs-4 col-sm-4 text-center'>
+					<a href="{% url 'job_details' job.id %}" class="btn btn-primary" role="button">Details</a>
+				</div>
 			</div>
 		</div>
 	{% endfor %}
+	</div>
+	<div class='col-xs-12 col-sm-4'>
+	    <div class="thumbnail text-center">
+	      <div class="caption">
+		    <span class='glyphicon glyphicon-envelope'></span>
+	        <h3>Job Offers Waiting</h3>
+	        <p>Provide your resume and companies will contact you. It's fast and easy.</p>
+	        <p><a href="{% url 'account_signup' %}" class="btn btn-primary" role="button">Sign Up</a></p>
+	      </div>
+	    </div>
+	</div>
 </div>
 
 {% endblock content %}
