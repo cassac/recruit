@@ -6,7 +6,6 @@
 {% endblock title %}
 
 {% block head %}
-<meta name="csrf-token" content="{{csrf_token}}">
 <style>
 .checkBox {
     display:inline-block;
@@ -21,11 +20,12 @@
 <div class='row'>
 	<div class='col-xs-12 col-sm-8'>
 		<form method='post'>
+		{% csrf_token %}
 		{% for job in jobs %}
 			<div class="well" id='{{ job.id }}'>
 				<div class='row'>
 					<div class='col-xs-1 checkBox'>
-						<input type='checkbox' name='requested_jobs[]'>
+						<input type='checkbox' name='requested_jobs[]' value='{{ job.id }}'>
 					</div>
 					<div class='col-xs-10'>
 						<div class='col-xs-10'>
