@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from .models import Job
@@ -13,13 +14,14 @@ def view_jobs(request):
 		jobs_ids = request.POST.getlist('requested_jobs[]')
 
 		if request.user.is_anonymous():
+			request.session['requested_jobs'] = jobs_ids
 			reverse_url = reverse('account_login')
-			jobs_ids_string = ','.join(jobs_ids)
-			query_string = '?jobs={}'.format(jobs_ids_string)
+			query_string = '?from={}'.format('jobs')
 			return HttpResponseRedirect(reverse_url + query_string)
 
 		context = {}
-		
+		messages.add_message(request, messages.SUCCESS,
+			'Form submitted successfully.')
 	return render(request, 'jobs/jobs.html', context)
 
 def view_job_details(request, job_id):
