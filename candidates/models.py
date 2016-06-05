@@ -66,3 +66,14 @@ class CandidateDocument(models.Model):
 		from recruit.utils import delete_from_s3
 		delete_from_s3([self.document])
 		super(CandidateDocument, self).delete(*args, **kwargs)
+
+class CandidateRequestedJob(models.Model):
+	candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, 
+		related_name='jobs')
+	job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='candidates')
+	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
+	created = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+	def __str__(self):
+		return 'U%d) %s - J%d) %s' % (self.candidate.pk, 
+			self.candidate.user.get_full_name(), self.job.pk, self.job.title)
