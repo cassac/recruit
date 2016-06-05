@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': settings.DEBUG}), 
     url(r'^available/(?P<bu_id>\d+)/$', interviewsViews.available, name='available'),
     url(r'^availability/(?P<bu_id>\d+)/$', interviewsViews.availability, name='availability'),
-    url(r'^interviews/', interviewsViews.interview_requests, name='interview_requests')
+    url(r'^interviews/', interviewsViews.interview_requests, name='interviews')
 ]
 
 if settings.DEBUG:
