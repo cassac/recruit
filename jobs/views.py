@@ -14,10 +14,10 @@ def view_jobs(request):
 		jobs_ids = request.POST.getlist('requested_jobs[]')
 
 		if request.user.is_anonymous():
+			request.session['add_new_jobs_pending'] = True
 			request.session['requested_jobs'] = jobs_ids
-			reverse_url = reverse('account_login')
-			query_string = '?from={}'.format('jobs')
-			return HttpResponseRedirect(reverse_url + query_string)
+			request.session['redirect_to'] = reverse('jobs')
+			return HttpResponseRedirect(reverse('account_login'))
 
 		context = {}
 		messages.add_message(request, messages.SUCCESS,
