@@ -172,6 +172,8 @@ MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
 DEFAULT_FILE_STORAGE = 'recruit.custom_storages.MediaStorage'
 
 # All auth configurations
+ACCOUNT_ADAPTER = 'accounts.adapter.MyAccountAdapter'
+
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 
