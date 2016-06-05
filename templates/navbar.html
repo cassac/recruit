@@ -8,11 +8,10 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">RECRUIT</a>
+      <a class="navbar-brand" href="{% url 'home' %}">RECRUIT</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'jobs' %}">Jobs</a></li>
         <li><a href="{% url 'recruiters' %}">Recruiters</a></li>
         {% if user.is_authenticated %}
