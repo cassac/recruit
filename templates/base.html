@@ -55,7 +55,21 @@
 		{% block scripts %}
 			<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 			{% bootstrap_javascript %}
+			<script>
+			$(function() {
+			    var section = window.location.pathname.split('/')[1];
+			    if (section.length) {
+			    	$('.nav li').each(function() {
+			    		var text = this.innerText.trim();
+			    		if (text && text.toLowerCase() == section) {
+			    			$(this).closest('li').addClass('active');
+			    		}
+			    	})
+			    }
+			});
+			</script>
 		{% endblock %}
+
 	</body>
 </html>
 
