@@ -1,8 +1,32 @@
+#!/usr/bin/python3
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Job
+from candidates.models import Candidate
+
+def update_requested_jobs(request, jobs_ids):
+
+	try:
+		candidate = request.user.candidate
+	except Candidate.DoesNotExist:
+		messages.add_message(request, messages.ERROR,
+			'This user is not a candidate.')
+		return
+	except:
+		raise
+
+	for job_id in jobs_ids:
+		candidate.jobs.create(candidate=candidate, 
+			job=Job.objects.get(pk=int(job_id)))
+
+	if 'requested_jobs' in request.session:
+		del request.session['requested_jobs']
+
+	messages.add_message(request, messages.SUCCESS,
+		'Form submitted successfully.')
 
 def view_jobs(request):
 
@@ -20,8 +44,9 @@ def view_jobs(request):
 			return HttpResponseRedirect(reverse('account_login'))
 
 		context = {}
-		messages.add_message(request, messages.SUCCESS,
-			'Form submitted successfully.')
+
+		update_requested_jobs(request, jobs_ids)
+
 	return render(request, 'jobs/jobs.html', context)
 
 def view_job_details(request, job_id):
