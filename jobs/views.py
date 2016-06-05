@@ -6,8 +6,9 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Job
 from candidates.models import Candidate
+from interviews.models import InterviewRequest
 
-def update_requested_jobs(request, jobs_ids):
+def add_interview_requests(request, jobs_ids):
 
 	try:
 		candidate = request.user.candidate
@@ -19,8 +20,9 @@ def update_requested_jobs(request, jobs_ids):
 		raise
 
 	for job_id in jobs_ids:
-		candidate.jobs.create(candidate=candidate, 
+		ir = InterviewRequest(candidate=candidate, 
 			job=Job.objects.get(pk=int(job_id)))
+		ir.save()
 
 	if 'requested_jobs' in request.session:
 		del request.session['requested_jobs']
@@ -45,7 +47,7 @@ def view_jobs(request):
 
 		context = {}
 
-		update_requested_jobs(request, jobs_ids)
+		add_interview_requests(request, jobs_ids)
 
 	return render(request, 'jobs/jobs.html', context)
 
