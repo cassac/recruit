@@ -1,10 +1,13 @@
 import json
+
 from django.shortcuts import render
 from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
-from interviews.models import Available
+from interviews.models import Available, InterviewRequest
 
 
 def available(request, bu_id):
@@ -48,4 +51,26 @@ def availability(request, bu_id):
 			user.userprofile.save()
 			message['message'] = 'Timezone and ' + message['message']	
 		return JsonResponse(message)
+
+@login_required
+def interview_requests(request):
+	user = request.user
+	user_type = user.userprofile.user_type
+	if user_type == 'Candidate':
+		interview_requests = InterviewRequest.objects.filter(
+			candidate=user.candidate).all()
+	elif user_type == 'Recruiter':
+		interview_requests = InterviewRequest.objects.filter(
+			job__recruiter=user.recruiter).all()
+	elif user_type == 'Employer':
+		interview_requests = InterviewRequest.objects.filter(
+			job__employer=user.employer).all()
+	elif user.is_staff:
+		interview_requests = InterviewRequest.objects.all()
+	else: 
+		raise PermissionDenied
+
+	return render(request, 
+		'interviews/interviews.html', 
+		{'interview_requests': interview_requests})
 
