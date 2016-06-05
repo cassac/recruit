@@ -36,8 +36,8 @@ class InterviewInvitation(models.Model):
 		return '<Interview C: %s B: %s>' % (self.candidate.user.email, self.job.title)
 
 class InterviewRequest(models.Model):
-	candidate = models.ForeignKey(Candidate)
-	job = models.ForeignKey(Job)
+	candidate = models.ForeignKey(Candidate, related_name='requested_jobs')
+	job = models.ForeignKey(Job, related_name='requested_candidates')
 	candidate_accepted = models.NullBooleanField()
 	employer_accepted = models.NullBooleanField()
 	last_modified = models.DateTimeField(auto_now_add=False, auto_now=True)
