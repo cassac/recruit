@@ -15,6 +15,9 @@
         <li class="active"><a href="{% url 'home' %}">Home</a></li>
         <li><a href="{% url 'jobs' %}">Jobs</a></li>
         <li><a href="{% url 'recruiters' %}">Recruiters</a></li>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'interviews' %}">Interviews</a></li>
+        {% endif %}
       </ul>
       <ul class="nav navbar-nav navbar-right">
       {% if user.is_authenticated %}
