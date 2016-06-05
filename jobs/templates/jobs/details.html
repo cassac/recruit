@@ -11,11 +11,9 @@
 
 {% block content %}
 
-<h1>Job Details</h1>
-
 <ol class="breadcrumb">
   <li><a href="{% url 'jobs'%}#{{ job.id }}">Jobs</a></li>
-  <li class="active">{{ job.title }}</li>
+  <li class="active">{{ job.title }} at {{ job.employer.name_english }}</li>
 </ol>
 
 <div class='row'>
