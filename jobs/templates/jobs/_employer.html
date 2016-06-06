@@ -1,0 +1,16 @@
+<h3>My Jobs</h3>
+<ul class="list-group">
+{% for job in user.employer.jobs.all|slice:'4' %}
+	<li class="list-group-item">{{ job.title }} {{ job.location }}</li>
+{% empty %}
+	<p>0 jobs created</p>
+	<a href="#" class="btn btn-primary">
+		Add Job
+	</a>
+{% endfor %}
+</ul>
+{% if user.employer.jobs.count > 0 and user.employer.jobs.count > 4 %}
+	<a href="#" class="btn btn-primary">
+		All My Jobs
+	</a>
+{% endif %}	

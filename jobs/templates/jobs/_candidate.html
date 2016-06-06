@@ -1,0 +1,13 @@
+<h3>Requested Jobs</h3>
+<ul class="list-group">
+{% for ir in user.candidate.requested_jobs.all|slice:'4' %}
+	<li class="list-group-item">{{ ir.job.title }} {{ ir.job.employer.name_english }}</li>
+{% empty %}
+	<p>0 jobs requested. "Check" jobs of interest and click "Submit".</p>
+{% endfor %}
+</ul>
+{% if user.candidate.requested_jobs.count > 0 and user.candidate.requested_jobs.count > 4 %}
+	<a href="{% url 'interviews' %}" class="btn btn-primary">
+		All Requested Jobs
+	</a>
+{% endif %}	
