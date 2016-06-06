@@ -52,7 +52,14 @@ class UserAdmin(BaseUserAdmin):
 	list_filter = ('is_staff',)
 	fieldsets = (
 		(None, {'fields': ('email', 'password', 'username',)}),
-		('Permissions', {'fields': ('is_staff',)}),
+		('Permissions', {
+			'fields': (
+				'is_staff', 
+				'groups',
+				'user_permissions'
+			),
+			'classes': ('collapse',)
+		}),
 	)
 	add_fieldsets = (
 		(None, {
