@@ -2,16 +2,26 @@
 
 {% block title %}
 {{ block.super }}
- - Welcome
+ - Job Recruitment Platform
 {% endblock title %}
 
 {% block content %}
-
-<h1>Welcome</h1>
 <div class='row'>
-<p>This is the homepage</p>
-</div>
+{% if user.is_authenticated %}
+	{% if user.candidate %}
+	 	{% include 'candidate/dashboard.html' %}
+	{% elif user.employer %}
+		{% include 'employers/dashboard.html' %}
+	{% elif user.recruiter %}
+		{% include 'recruiters/dashboard.html' %}
+	{% else %}
+		<p>Custom Message Needed</p>
+	{% endif %}	        
+{% else %}
+	<p>This is the homepage for unauthorized users</p>
 
+{% endif %}
+</div>
 {% endblock content %}
 
 
