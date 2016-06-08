@@ -61,11 +61,11 @@
 	      <div class="caption">
 		    {% if user.is_authenticated %}
 				{% if user.candidate %}
-				 	{% include 'jobs/_candidate.html' %}
+				 	{% include 'dashboard/_candidate.html' %}
 				{% elif user.employer %}
-					{% include 'jobs/_employer.html' %}
+					{% include 'dashboard/_employer.html' %}
 				{% elif user.recruiter %}
-					{% include 'jobs/_recruiter.html' %}
+					{% include 'dashboard/_recruiter.html' %}
 				{% else %}
 					<p>Custom Message Needed</p>
 				{% endif %}	        
