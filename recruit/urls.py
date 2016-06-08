@@ -22,9 +22,11 @@ from django.views.generic.base import TemplateView
 from interviews import views as interviewsViews
 from jobs import views as jobsViews
 from recruiters import views as recruitersViews
+from dashboards import views as dashboardViews
+from django.contrib.auth.models import User
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='home.html'), name="home"),
+    url(r'^$', dashboardViews.dashboards, name='dashboards'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^jobs/$', jobsViews.view_jobs, name='jobs'),
