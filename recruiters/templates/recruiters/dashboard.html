@@ -1,25 +1,42 @@
+{% extends "base.html" %}
+
+{% load admin_urls %}
+
+{% block content %}
 <div class='row'>
 	<div class='col-xs-12 col-sm-6'>
 		<h2>Overview</h2>
 		<ul class="list-group">
 			<li class="list-group-item">
-				<a href='#'><span class="badge">18</span>
+				<a href='#'>
+					<span class="badge">
+						{{ interviews_pending_confirmation }}
+					</span>
 					Interviews Pending Confirmation
 				</a>
 			</li>
 			<li class="list-group-item">
-				<a href='#'><span class="badge">15</span>
+				<a href='#'>
+					<span class="badge">
+						{{ interviews_pending_follow_up }}
+					</span>
 					Interviews Awaiting Follow Up
 				</a>
 			</li>			
 			<li class="list-group-item">
-				<a href='#'><span class="badge">14</span>
-					New Employer Requests
+				<a href='#'>
+					<span class="badge">
+						{{ pending_employer_requests }}
+					</span>
+					Pending Employer Requests
 				</a>
 			</li>
 			<li class="list-group-item">
-				<a href='#'><span class="badge">20</span>
-					New Candidate Requests
+				<a href='#'>
+					<span class="badge">
+						{{ pending_candidate_requests }}
+					</span>
+					Pending Candidate Requests
 				</a>
 			</li>
 		</ul>
@@ -28,13 +45,13 @@
 		<h2>Actions</h2>
 		<ul class="list-group">
 			<li class="list-group-item">
-				<a href='#'>
+				<a href="{% url 'admin:jobs_job_add'  %}">
 					Add Job
 				</a>
 			</li>
 			<li class="list-group-item">
-				<a href='#'>
-					Edit Job
+				<a href="{% url 'admin:jobs_job_changelist'  %}">
+					View/Edit Jobs
 				</a>
 			</li>			
 			<li class="list-group-item">
@@ -51,4 +68,4 @@
 	</div>
 </div>
 
-
+{% endblock %}
