@@ -7,20 +7,8 @@
 
 {% block content %}
 <div class='row'>
-{% if user.is_authenticated %}
-	{% if user.candidate %}
-	 	{% include 'candidate/dashboard.html' %}
-	{% elif user.employer %}
-		{% include 'employers/dashboard.html' %}
-	{% elif user.recruiter %}
-		{% include 'recruiters/dashboard.html' %}
-	{% else %}
-		<p>Custom Message Needed</p>
-	{% endif %}	        
-{% else %}
-	<p>This is the homepage for unauthorized users</p>
-
-{% endif %}
+	<h1>Incomplete</h1>
+	<p>A user type has not been assigned to you. Please contact the administrator.</p>
 </div>
 {% endblock content %}
 
