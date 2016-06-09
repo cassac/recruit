@@ -16,7 +16,8 @@ from recruit.choices import (TIMEZONE_CHOICES, COUNTRY_CHOICES, GENDER_CHOICES,
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	timezone = models.CharField(choices=TIMEZONE_CHOICES, max_length=50, blank=True)
-	citizenship = CountryField()
+	citizenship = CountryField(blank_label='(Select country)')
+	skype_id = models.CharField(max_length=50, blank=True)
 	user_type = models.CharField(
 		choices = (('Candidate', 'Candidate'), ('Recruiter', 'Recruiter'), ('Employer', 'Employer'),),
 		max_length = 50,
