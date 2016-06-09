@@ -215,3 +215,16 @@ MESSAGE_TAGS = {messages.DEBUG: 'debug',
                 messages.SUCCESS: 'success',
                 messages.WARNING: 'warning',
                 messages.ERROR: 'danger'}
+
+# django-countries configuration
+COUNTRIES_FIRST_REPEAT = True
+COUNTRIES_FIRST_BREAK = 'Select country'
+COUNTRIES_FIRST = [
+    'US',
+    'CA',
+    'GB',
+    'IE',
+    'AU',
+    'NZ',
+    'ZA'
+]
