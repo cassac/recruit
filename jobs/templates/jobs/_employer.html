@@ -1,0 +1,20 @@
+<h4>Questions?</h4>
+<p>Contact your recruiter</p>
+<ul class="list-group">
+{% for job in user.employer.jobs.all %}
+  <li class="list-group-item">
+  	<div class='row'>
+		<div class='col-xs-4'>
+			<img style="max-width: 50px" class="img-responsive img-rounded" src="{{ job.recruiter.thumb.url }}" alt="{{ job.recruiter.user.first_name }}">
+		</div>
+		<div class='col-xs-8'>
+			<strong>{{ job.recruiter.user.first_name }}</strong>
+			<br>
+			<span class='glyphicon glyphicon-earphone'>
+				{{ job.recruiter.user.phone_number }}
+			</span>
+		</div>
+	</div>	
+  </li>
+{% endfor %}
+</ul>

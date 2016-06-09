@@ -1,0 +1,13 @@
+<h4>Your Requested Jobs</h4>
+<ul class="list-group">
+{% for ir in user.candidate.requested_jobs.all %}
+  <li class="list-group-item">
+  	<a href='{% url "job_details" ir.job.pk %}'>
+		<strong>
+			{{ ir.job.title }}
+		</strong> 
+		{{ ir.job.employer.name_english }}
+	</a>
+  </li>
+{% endfor %}
+</ul>
