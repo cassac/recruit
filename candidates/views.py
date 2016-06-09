@@ -1,3 +1,10 @@
 from django.shortcuts import render
+from .forms import UserApplyForm
 
-# Create your views here.
+def apply(request):
+	form = UserApplyForm()
+	context = {
+		'form': form,
+	}
+	return render(request, 'candidates/apply.html',
+		context)
