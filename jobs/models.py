@@ -14,7 +14,8 @@ class Country(models.Model):
 		return self.country
 
 class Job(models.Model):
-	employer = models.ForeignKey(Employer, on_delete=models.CASCADE)
+	employer = models.ForeignKey(Employer, on_delete=models.CASCADE, 
+		related_name='jobs')
 	title = models.CharField(max_length=100)
 	location = models.CharField(choices=(('onsite', 'On-site'), ('remote', 'Remote'),), max_length=50, blank=True, null=True)
 	weekly_hours = models.IntegerField()
