@@ -1,10 +1,43 @@
 from django.shortcuts import render
-from .forms import UserApplyForm
+from django.contrib.auth.models import User
+from django.contrib import messages
+from accounts.models import UserProfile
+from .forms import UserApplyStep1Form
 
-def apply(request):
-	form = UserApplyForm()
-	context = {
-		'form': form,
-	}
-	return render(request, 'candidates/apply.html',
-		context)
+def apply_step_1(request):
+	if request.method == 'POST':
+		
+		form = UserApplyStep1Form(request.POST)
+
+		if form.is_valid:
+			data = form.data
+			first_name = data['first_name']
+			last_name = data['last_name']
+			email = data['email']
+			citizenship = data['citizenship']
+			skype_id = data['skype_id']
+			timezone = data['timezone']
+
+			user, created = User.objects.get_or_create(
+				first_name=first_name,
+				last_name=last_name,
+				email=email,
+				username=email
+				)
+
+			if not created:
+				messages.add_message(request, messages.ERROR,
+					email + ' has already been registered.')
+			else:
+				userprofile = UserProfile(
+					user=user,
+					timezone=timezone,
+					citizenship=citizenship,
+					skype_id=skype_id,
+					user_type='Candidate'
+					)
+				userprofile.save()
+
+	else:
+		form = UserApplyStep1Form()
+	return render(request, 'candidates/apply.html', {'form': form})
