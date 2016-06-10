@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django_countries.fields import CountryField
+from django.core import signing
+from django.core.signing import SignatureExpired, BadSignature
 
 from jobs.models import Job
 from recruit.choices import (EDUCATION_CHOICES, EMPLOYER_TYPE_CHOICES)
@@ -37,6 +39,23 @@ class Candidate(models.Model):
 
 	def __str__(self):
 		return self.user.email
+
+	def generate_token(self):
+		email = self.user.email
+		token = signing.dumps({'email': email})
+		return token
+
+	@staticmethod
+	def verify_token(token, max_age=604800):
+		# default max_age is 7 days
+		try:
+			value = signing.loads(token, max_age=max_age)
+		except SignatureExpired:
+			return None
+		except BadSignature:
+			return None
+		user = User.objects.get(email=value['email'])
+		return user.candidate
 
 def update_user_profile(sender, instance, created, **kwargs):
 	from accounts.models import UserProfile
