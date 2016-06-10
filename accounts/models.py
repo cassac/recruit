@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
+from allauth.account.models import EmailAddress
 
 from jobs.models import Job
 
@@ -28,8 +29,11 @@ class UserProfile(models.Model):
 	def __str__(self):
 		return self.user.email
 
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
-
-post_save.connect(create_user_profile, sender=User)
+def create_account_emailaddress(sender, instance, created, **kwargs):
+	# Used for django-allauth
+	if created:
+		EmailAddress.objects.get_or_create(
+			user_id=instance.id,
+			email=instance.email
+		)
+post_save.connect(create_account_emailaddress, sender=User)
