@@ -26,3 +26,15 @@
 <input type='submit' value='Submit'>
 </form>
 {% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js"></script>
+<script>
+	var timezoneValues = Object.values(jstz.olson.timezones);
+	var detectedTimezone = jstz.determine().name();
+	if(timezoneValues.indexOf(detectedTimezone) != -1) {
+	  $('#id_timezone').prop('selected', true).val(detectedTimezone);
+	}
+</script>
+{% endblock %}
