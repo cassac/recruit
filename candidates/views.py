@@ -2,10 +2,13 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from accounts.models import UserProfile
-from .forms import UserApplyStep1Form
+from .forms import UserApplyStep1Form, UserApplyStep2Form
 
 def apply_step_1(request):
-	if request.method == 'POST':
+
+	key = request.GET.get('key', None)
+
+	if not key and request.method == 'POST':
 		
 		form = UserApplyStep1Form(request.POST)
 
@@ -38,6 +41,13 @@ def apply_step_1(request):
 					)
 				userprofile.save()
 
-	else:
+	elif not key and request.method == 'GET':
 		form = UserApplyStep1Form()
+
+	elif key and request.method == 'GET':
+		form = UserApplyStep2Form()
+
+	elif key and request.method == 'POST':
+		form = UserApplyStep2Form(request.POST)
+
 	return render(request, 'candidates/apply.html', {'form': form})
