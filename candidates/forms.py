@@ -3,7 +3,7 @@ from django_countries.fields import LazyTypedChoiceField
 from django_countries import countries
 from recruit.choices import TIMEZONE_CHOICES
 
-class UserApplyForm(forms.Form):
+class UserApplyStep1Form(forms.Form):
 	first_name = forms.CharField(max_length=20)
 	last_name = forms.CharField(max_length=20)
 	email = forms.EmailField()
