@@ -18,3 +18,4 @@ class UserApplyStep2Form(forms.Form):
 	education = forms.TypedChoiceField(choices=EDUCATION_CHOICES)
 	education_major = forms.CharField(max_length=50)
 	image = forms.ImageField()
+	resume = forms.FileField()
