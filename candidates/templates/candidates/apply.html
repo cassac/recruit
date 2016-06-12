@@ -9,10 +9,12 @@
 
 {% block content %}
 
+{% if form %}
+
 {% include 'candidates/_progress.html' %}
 
 <h1>Application Page</h1>
-<form method='post'>
+<form method='post' enctype="multipart/form-data">
 {% csrf_token %}
 {% for field in form %}
     <div class="fieldWrapper">
@@ -25,10 +27,15 @@
 {% endfor %}
 <input type='submit' value='Submit'>
 </form>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}
 {{ block.super }}
+<script>
+    $('#step1').addClass('complete');
+</script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js"></script>
 <script>
 	var timezoneValues = Object.values(jstz.olson.timezones);
