@@ -1,18 +1,22 @@
 from django.shortcuts import render
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from accounts.models import UserProfile
+
 from .forms import UserApplyStep1Form, UserApplyStep2Form
 
 def apply_step_1(request):
 
 	key = request.GET.get('key', None)
+	candidate = UserProfile.verify_token(key)
 
 	if not key and request.method == 'POST':
 		
 		form = UserApplyStep1Form(request.POST)
 
-		if form.is_valid:
+		if form.is_valid():
 			data = form.data
 			first_name = data['first_name']
 			last_name = data['last_name']
@@ -39,7 +43,14 @@ def apply_step_1(request):
 					skype_id=skype_id,
 					user_type='Candidate'
 					)
+
 				userprofile.save()
+				
+				key = user.userprofile.generate_token()
+				
+				return HttpResponseRedirect(
+					reverse('candidate_apply') + '?key=' + key)
+
 
 	elif not key and request.method == 'GET':
 		form = UserApplyStep1Form()
