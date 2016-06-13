@@ -8,7 +8,7 @@ from accounts.models import UserProfile
 from .models import Candidate, CandidateDocument
 from .forms import UserApplyStep1Form, UserApplyStep2Form
 
-def apply_step_1(request):
+def apply(request):
 
 	key = request.GET.get('key', None)
 	user = UserProfile.verify_token(key)
@@ -89,7 +89,8 @@ def apply_step_1(request):
 			messages.add_message(request, messages.SUCCESS,
 				'Form submitted successfully.')
 
-			# handle redirect
+			return HttpResponseRedirect(
+					reverse('candidate_apply_success') + '?key=' + key)
 
 	elif key and user and request.method == 'GET':
 		form = UserApplyStep2Form()
@@ -101,3 +102,15 @@ def apply_step_1(request):
 		form = None
 
 	return render(request, 'candidates/apply.html', {'form': form})
+
+def apply_success(request):
+	key = request.GET.get('key', None)
+	user = UserProfile.verify_token(key)
+
+	if not key or not user:
+		messages.add_message(request, messages.ERROR,
+			'A valid application key is required to view this page.')
+	else:
+		print('else...')
+
+	return render(request, 'candidates/apply.html', {'success': 'success'})
