@@ -111,6 +111,11 @@ def apply_success(request):
 		messages.add_message(request, messages.ERROR,
 			'A valid application key is required to view this page.')
 	else:
-		print('else...')
+		jobs_url = reverse('jobs') + '?key=' + key
+		availability_url = reverse('available', args=[user.id]) + '?key=' + key
 
-	return render(request, 'candidates/apply.html', {'success': 'success'})
+	return render(request, 'candidates/apply.html', 
+			{'success': 'success',
+			 'jobs_url': jobs_url,
+			 'availability_url': availability_url
+			})
