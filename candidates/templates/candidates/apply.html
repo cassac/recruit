@@ -10,16 +10,14 @@
 {% block content %}
 
 {% if form %}
-
 {% include 'candidates/_progress.html' %}
-
 <h1>Application Page</h1>
 <form method='post' enctype="multipart/form-data">
 {% csrf_token %}
 {% for field in form %}
     <div class="fieldWrapper">
-        {{ field.errors }}
         {{ field.label_tag }} {{ field }}
+        {{ field.errors }}
         {% if field.help_text %}
         <p class="help">{{ field.help_text|safe }}</p>
         {% endif %}
@@ -27,6 +25,19 @@
 {% endfor %}
 <input type='submit' value='Submit'>
 </form>
+{% endif %}
+
+{% if success %}
+<h1>Congratulations! <small>Application Submitted</small></h1>
+<div class='row'>
+    <div class='col-md-offset-3 col-md-6'>
+        <h3>What next?</h3>
+        <ul>
+            <li>Select jobs to interview for</li>
+            <li>Provide your availability</li>
+        </ul>
+    </div>
+</div>
 {% endif %}
 
 {% endblock %}
