@@ -7,11 +7,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import Job
 from candidates.models import Candidate
 from interviews.models import InterviewRequest
+from accounts.models import UserProfile
 
-def add_interview_requests(request, jobs_ids):
+def add_interview_requests(request, user, jobs_ids):
 
 	try:
-		candidate = request.user.candidate
+		candidate = user.candidate
 	except Candidate.DoesNotExist:
 		messages.add_message(request, messages.ERROR,
 			'This user is not a candidate.')
@@ -31,6 +32,8 @@ def add_interview_requests(request, jobs_ids):
 		'Form submitted successfully.')
 
 def view_jobs(request):
+	key = request.GET.get('key', None)
+	user = UserProfile.verify_token(key)
 
 	if request.method == 'GET':
 		jobs = Job.objects.all()
@@ -39,7 +42,7 @@ def view_jobs(request):
 	if request.method == 'POST':
 		jobs_ids = request.POST.getlist('requested_jobs[]')
 
-		if request.user.is_anonymous():
+		if request.user.is_anonymous() and (not key or not user):
 			request.session['add_new_jobs_pending'] = True
 			request.session['requested_jobs'] = jobs_ids
 			request.session['redirect_to'] = reverse('jobs')
@@ -47,7 +50,10 @@ def view_jobs(request):
 
 		context = {}
 
-		add_interview_requests(request, jobs_ids)
+		if not user:
+			user = request.user
+
+		add_interview_requests(request, user, jobs_ids)
 
 	return render(request, 'jobs/jobs.html', context)
 
