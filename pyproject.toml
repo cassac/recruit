@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "recruit"
+version = "0.1.0"
+description = ""
+authors = ["Bruce McIntyre <bruce.mcintyre@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^4.1.4"
+django-extensions = "^3.2.1"
+django-countries = "^7.4.2"
+django-bootstrap3 = "^22.2"
+django-phonenumber-field = "^7.0.1"
+django-storages = "^1.13.1"
+django-allauth = "^0.51.0"
+Pillow = "^9.3.0"
+phonenumbers = "^8.13.2"
+simplegeneric = "^0.8.1"
+boto3 = "^1.26.27"
+setuptools = "39.1.0"
+pytz = "^2022.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
